@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gama Distillers Uganda - Rozan The Ledger</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-red': '#b91c1c',
+                        'brand-yellow': '#fbbf24',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+        
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f5f5f4;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #b91c1c;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #991b1b;
+        }
+        
+        /* Enhanced Animations */
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes scale-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        
+        @keyframes slide-in-right {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        @keyframes slide-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .animate-fade-in-up {
+            animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 0.6s ease-out forwards;
+        }
+        
+        .animate-scale-in {
+            animation: scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        .animate-bounce-slow {
+            animation: bounce-slow 3s infinite ease-in-out;
+        }
+        
+        .animate-slide-in {
+            animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .animate-slide-up {
+            animation: slide-in-up 0.6s ease-out forwards;
+        }
+        
+        .animate-pulse-soft {
+            animation: pulse-soft 2s infinite ease-in-out;
+        }
+        
+        /* Staggered Animation Delays */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        
+        /* Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .hover-scale {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Product Card Hover */
+        .product-card {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .product-image {
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
+        
+        /* Button Hover Effects */
+        .btn-primary {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(185, 28, 28, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        /* Input Focus Effects */
+        .input-enhanced {
+            transition: all 0.3s ease;
+        }
+        
+        .input-enhanced:focus {
+            transform: scale(1.02);
+        }
+        
+        /* Category Filter Animation */
+        .filter-btn {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Cart Slide Animation */
+        .cart-overlay {
+            transition: opacity 0.3s ease;
+        }
+        
+        .cart-panel {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Back to Top Button */
+        .back-to-top {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-4px);
+        }
+        
+        /* Hero Parallax Effect */
+        .hero-parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body class="font-sans bg-stone-50">
+    <!-- Age Gate Modal -->
+    <div id="ageGate" class="fixed inset-0 z-[100] bg-stone-900 flex items-center justify-center p-6 text-center hidden">
+        <div class="max-w-md w-full bg-white rounded-2xl p-10 shadow-2xl space-y-8">
+            <div class="space-y-4">
+                <h1 class="text-4xl font-bold text-amber-900">Rozan the Ledger</h1>
+                <p class="text-stone-500 font-medium">Fine Spirits from Gama Distillers</p>
+                <div class="h-px bg-stone-200 w-16 mx-auto"></div>
+            </div>
+            <div class="space-y-6">
+                <p class="text-lg text-stone-700">
+                    You must be of legal drinking age to access this marketplace. 
+                    Are you 18 years or older?
+                </p>
+                <div class="flex flex-col gap-3">
+                    <button onclick="verifyAge(true)" class="w-full bg-amber-900 hover:bg-amber-800 text-white font-semibold py-4 rounded-xl transition-all transform active:scale-95 shadow-lg">
+                        Yes, I am 18 or older
+                    </button>
+                    <button onclick="verifyAge(false)" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-600 font-semibold py-4 rounded-xl transition-all">
+                        No, exit
+                    </button>
+                </div>
+                <div id="ageError" class="bg-red-50 text-red-600 p-4 rounded-lg border border-red-100 text-sm hidden">
+                    We're sorry, you must be of legal drinking age to browse our collection.
+                </div>
+            </div>
+            <p class="text-xs text-stone-400 uppercase tracking-widest">Drink Responsibly</p>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="mainApp" class="hidden min-h-screen flex flex-col">
+        <!-- Brand Stripe -->
+        <div class="bg-[#b91c1c] h-1 w-full"></div>
+
+        <!-- Header -->
+        <header class="sticky top-0 z-50 bg-white shadow-sm border-b border-stone-200">
+            <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3 flex-shrink-0">
+                    <div class="w-12 h-12 bg-[#b91c1c] rounded-lg flex items-center justify-center text-[#fbbf24] font-black text-2xl shadow-lg border-2 border-[#fbbf24]/30">G</div>
+                    <div class="hidden sm:block">
+                        <h1 class="text-xl font-black leading-none text-stone-900 tracking-tight uppercase">Gama Distillers</h1>
+                        <span class="text-[10px] tracking-[0.3em] uppercase text-[#b91c1c] font-black">Rozan The Ledger</span>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="flex-grow max-w-md relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-400 group-focus-within:text-[#b91c1c] transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Search Cock, Jogoo or spirits..." 
+                        class="block w-full pl-10 pr-4 py-2 bg-stone-100 border-2 border-transparent rounded-full text-sm focus:ring-0 focus:border-[#b91c1c]/20 focus:bg-white transition-all outline-none text-stone-800"
+                        oninput="handleSearch(this.value)">
+                </div>
+
+                <div class="flex items-center gap-3 flex-shrink-0">
+                    <button onclick="openCart()" class="relative p-3 bg-[#b91c1c] text-white rounded-xl hover:bg-[#991b1b] transition-all group active:scale-95 shadow-md flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span id="cartCount" class="bg-[#fbbf24] text-[#b91c1c] text-[10px] font-black px-2 py-0.5 rounded-full border border-[#b91c1c]/20 hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow">
+            <!-- Hero Section -->
+            <section class="relative min-h-[600px] flex items-center px-6 overflow-hidden bg-stone-900 hero-parallax">
+                <div class="absolute inset-0 bg-gradient-to-r from-stone-900 via-stone-900/85 to-transparent z-10"></div>
+                <div class="absolute inset-0">
+                    <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=2000" alt="Background" class="w-full h-full object-cover opacity-60">
+                </div>
+                
+                <div class="relative z-20 max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-16 items-center">
+                    <div class="animate-fade-in-up">
+                        <span class="inline-block text-[#fbbf24] font-black uppercase tracking-[0.5em] text-xs mb-6 animate-pulse-soft">Ugandan Leading Premium Company</span>
+                        <h2 class="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-none tracking-tight">GAMA DISTILLERS LTD</h2>
+                        <p class="text-stone-200 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-lg">
+                            Home of Uganda's finest spirits: <span class="text-[#fbbf24] font-bold">Cock</span> & <span class="text-[#fbbf24] font-bold">Jogoo</span>. Crafted for the Pearl of Africa.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="scrollToCatalog()" class="bg-[#b91c1c] text-white px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-[#991b1b] transition-all shadow-xl hover:shadow-2xl btn-primary">
+                                Shop Now
+                            </button>
+                            <button onclick="fetchAiRecommendation('sophisticated', 'celebration')" class="bg-white/10 backdrop-blur-md text-white border-2 border-white/30 px-8 py-5 rounded-full font-bold hover:bg-white hover:text-[#b91c1c] transition-all flex items-center gap-3 active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14H8a4 4 0 01-4-4V5h12v5a4 4 0 01-4 4z" />
+                                </svg>
+                                Ask Sommelier
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="hidden lg:flex justify-end animate-fade-in-up delay-200">
+                        <div class="relative">
+                            <div class="absolute -inset-6 bg-[#fbbf24]/20 blur-3xl rounded-full"></div>
+                            <img src="https://images.unsplash.com/photo-1594498653385-d5172c532c00?auto=format&fit=crop&q=80&w=800" alt="Featured Product" class="relative w-80 h-auto drop-shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-700">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Recommendation Bar -->
+            <div id="aiRecommendation" class="max-w-5xl mx-auto px-6 -mt-16 relative z-30 hidden">
+                <div class="bg-white border-b-4 border-[#b91c1c] shadow-2xl rounded-2xl p-8 md:p-10 flex flex-col md:flex-row gap-8 items-center animate-scale-in">
+                    <div class="flex-shrink-0 w-20 h-20 bg-[#b91c1c] rounded-full flex items-center justify-center text-[#fbbf24] shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14H8a4 4 0 01-4-4V5h12v5a4 4 0 01-4 4z" />
+                        </svg>
+                    </div>
+                    <div class="flex-grow text-center md:text-left">
+                        <h4 class="font-black text-[#b91c1c] uppercase text-xs tracking-[0.2em] mb-2">Expert Recommendation</h4>
+                        <p id="aiSuggestion" class="text-2xl md:text-3xl font-black text-stone-900 mb-2"></p>
+                        <p id="aiReasoning" class="text-stone-600 text-base font-medium leading-relaxed"></p>
+                    </div>
+                    <button onclick="closeAiRecommendation()" class="flex-shrink-0 p-3 text-stone-300 hover:text-stone-600 hover:bg-stone-100 rounded-full transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading indicator for AI -->
+            <div id="aiLoading" class="max-w-5xl mx-auto px-6 -mt-16 relative z-30 hidden">
+                <div class="bg-white shadow-2xl rounded-2xl p-10 flex items-center justify-center animate-scale-in">
+                    <svg class="animate-spin h-10 w-10 text-[#b91c1c]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="ml-4 text-stone-600 font-medium text-lg">Getting expert recommendation...</span>
+                </div>
+            </div>
+
+            <!-- Catalog -->
+            <section id="catalog" class="max-w-7xl mx-auto px-6 py-24 scroll-mt-24">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+                    <div class="border-l-4 border-[#b91c1c] pl-6 animate-slide-up">
+                        <h2 class="text-4xl md:text-5xl font-black text-stone-900 mb-3 tracking-tight uppercase">Product Catalog</h2>
+                        <p class="text-stone-500 max-w-xl font-medium text-lg">Authentic spirits from Gama Distillers. Direct fulfillment across Uganda.</p>
+                    </div>
+                    <div class="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar" id="categoryFilters">
+                        <!-- Filters will be populated by JS -->
+                    </div>
+                </div>
+
+                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    <!-- Products will be populated by JS -->
+                </div>
+
+                <div id="noResults" class="text-center py-24 bg-white rounded-3xl border-2 border-dashed border-stone-200 shadow-lg hidden">
+                    <div class="p-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-stone-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <p class="text-stone-400 font-bold text-xl mb-4">No spirits match your search.</p>
+                        <button onclick="resetFilters()" class="bg-[#b91c1c] text-white px-8 py-3 rounded-full font-black uppercase tracking-widest hover:bg-[#991b1b] transition-all shadow-lg btn-primary">
+                            Reset Selection
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Back to Top Button -->
+            <button onclick="scrollToTop()" id="backToTop" class="fixed bottom-24 right-6 z-50 w-14 h-14 bg-[#b91c1c] text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-[#991b1b] transition-all opacity-0 invisible back-to-top">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" />
+                </svg>
+            </button>
+        </main>
+
+        <!-- Floating Contact -->
+        <div class="fixed bottom-6 left-6 z-[60] flex items-center gap-3 animate-bounce-slow">
+            <div class="w-14 h-14 bg-[#ff4d4d] rounded-full shadow-2xl flex items-center justify-center text-white cursor-pointer hover:scale-110 transition-transform" onclick="contactUs()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="bg-white px-5 py-2.5 rounded-full shadow-xl text-stone-800 font-black text-sm border border-stone-100 hidden sm:block">
+                Contact us
+            </div>
+        </div>
+
+        <footer class="bg-stone-900 text-white py-20 px-6 border-t-[8px] border-[#b91c1c]">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-[#b91c1c] rounded-lg flex items-center justify-center text-[#fbbf24] font-black text-xl">G</div>
+                        <h1 class="text-2xl font-black uppercase tracking-tighter">Gama Distillers</h1>
+                    </div>
+                    <p class="text-stone-400 text-sm font-medium leading-relaxed">
+                        Uganda's premier distillery. Crafting legendary independent brands like Cock and Jogoo for the bold and refined.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-black mb-8 text-[#fbbf24] uppercase tracking-[0.2em] text-xs">The Collection</h4>
+                    <ul class="space-y-4 text-stone-400 text-sm font-bold uppercase tracking-widest">
+                        <li class="hover:text-white cursor-pointer transition-colors" onclick="setFilter('Gin')">Cock Gins</li>
+                        <li class="hover:text-white cursor-pointer transition-colors" onclick="setFilter('Vodka')">Jogoo Vodka</li>
+                        <li class="hover:text-white cursor-pointer transition-colors" onclick="setFilter('Specialty')">Cock Sherry</li>
+                        <li class="hover:text-white cursor-pointer transition-colors" onclick="setFilter('Whiskey')">Fine Whiskey</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-black mb-8 text-[#fbbf24] uppercase tracking-[0.2em] text-xs">Orders</h4>
+                    <ul class="space-y-4 text-stone-400 text-sm font-bold uppercase tracking-widest">
+                        <li>Kampala Delivery</li>
+                        <li>Upcountry Shipping</li>
+                        <li>Bulk Wholesale</li>
+                        <li>Order Status</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-black mb-8 text-[#fbbf24] uppercase tracking-[0.2em] text-xs">Leger Update</h4>
+                    <p class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-6 leading-relaxed">Exclusive releases & Ugandan events.</p>
+                    <div class="flex gap-2">
+                        <input type="email" placeholder="YOUR EMAIL" class="bg-stone-800 border-none rounded-lg px-4 py-3 text-xs w-full focus:ring-1 focus:ring-[#fbbf24] transition-all outline-none">
+                        <button class="bg-[#b91c1c] px-4 rounded-lg hover:bg-[#991b1b] transition-colors shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="max-w-7xl mx-auto border-t border-stone-800 mt-16 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-stone-500 text-[10px] font-black uppercase tracking-widest">© 2026 GAMA DISTILLERS LTD UGANDA. POWERED BY ROZAN THE LEDGER.</p>
+                <div class="flex items-center gap-6 text-[10px] text-stone-500 font-black tracking-[0.3em] uppercase">
+                    <span class="text-[#fbbf24]">Enjoy Responsibly</span>
+                    <span class="w-1 h-1 bg-stone-700 rounded-full"></span>
+                    <span>18+ Required</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="fixed inset-0 z-[110] overflow-hidden hidden">
+        <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-md transition-opacity" onclick="closeCart()"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col animate-slide-in border-l border-stone-200">
+            <div class="px-6 py-6 border-b flex items-center justify-between bg-stone-50">
+                <div>
+                    <h2 class="text-2xl font-black text-stone-900 uppercase tracking-tighter">Your Order</h2>
+                    <p class="text-[10px] font-bold text-[#b91c1c] uppercase tracking-widest mt-1">Gama Distillers Uganda</p>
+                </div>
+                <button onclick="closeCart()" class="p-2 hover:bg-stone-200 rounded-full transition-colors text-stone-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="cartItems" class="flex-grow overflow-y-auto px-6 py-6 bg-white">
+                <!-- Cart items will be populated by JS -->
+            </div>
+
+            <div id="cartFooter" class="p-8 border-t bg-stone-50 space-y-6 hidden">
+                <div class="flex justify-between items-center">
+                    <span class="text-stone-500 font-black uppercase text-xs tracking-widest">Total Order</span>
+                    <span id="cartTotal" class="text-2xl font-black text-[#b91c1c]">UGX 0</span>
+                </div>
+                <div id="cartActions">
+                    <!-- Actions will be populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Product Data
+        const products = [
+            {
+                id: 'cock-sherry-001',
+                name: 'Cock Sherry Liqueur',
+                category: 'Specialty',
+                description: 'A premium Ugandan liqueur with a rich, velvety texture and deep aromatic notes. Perfectly balanced for sipping or cocktails.',
+                price: 25000,
+                image: 'https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?auto=format&fit=crop&q=80&w=800',
+                abv: '22%',
+                availability: true,
+            },
+            {
+                id: 'cock-uganda-gin-002',
+                name: 'Cock Uganda Flavoured Gin',
+                category: 'Gin',
+                description: 'Triple distilled finest quality gin with a unique Ugandan twist. Smooth, crisp, and refreshing.',
+                price: 18000,
+                image: 'https://images.unsplash.com/photo-1514218055094-a20129048f10?auto=format&fit=crop&q=80&w=800',
+                abv: '40%',
+                availability: true,
+            },
+            {
+                id: 'jogoo-pineapple-003',
+                name: 'Jogoo Pineapple Vodka',
+                category: 'Vodka',
+                description: 'Infused with the sweetness of tropical Ugandan pineapples. A vibrant and bold spirit for any celebration.',
+                price: 22000,
+                image: 'https://images.unsplash.com/photo-1458644267420-66bc8a5f21e4?auto=format&fit=crop&q=80&w=800',
+                abv: '40%',
+                availability: true,
+            },
+            {
+                id: 'cock-gin-classic-004',
+                name: 'Cock Gin Classic',
+                category: 'Gin',
+                description: 'The standard of Ugandan gin excellence. Distilled to perfection for a clean, botanical-forward profile.',
+                price: 15000,
+                image: 'https://images.unsplash.com/photo-1614313511387-1436a4480ebb?auto=format&fit=crop&q=80&w=800',
+                abv: '40%',
+                availability: true,
+            },
+            {
+                id: 'cock-whiskey-005',
+                name: 'Cock Premium Whiskey',
+                category: 'Whiskey',
+                description: 'Aged and blended for a smooth finish with hints of toasted oak and native spices.',
+                price: 45000,
+                image: 'https://images.unsplash.com/photo-1527281473222-793722f67200?auto=format&fit=crop&q=80&w=800',
+                abv: '43%',
+                availability: true,
+            }
+        ];
+
+        const WHATSAPP_NUMBER = '256758238514';
+
+        // State
+        let cart = [];
+        let currentFilter = 'All';
+        let searchQuery = '';
+        let cartStep = 'cart';
+        let orderForm = {
+            customerName: '',
+            deliveryAddress: '',
+            phoneNumber: '',
+            notes: ''
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const verified = localStorage.getItem('age-verified');
+            if (verified === 'true') {
+                showMainApp();
+            } else {
+                document.getElementById('ageGate').classList.remove('hidden');
+            }
+
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+
+            renderCategoryFilters();
+            renderProducts();
+            updateCartCount();
+        });
+
+        // Age Gate
+        function verifyAge(isOldEnough) {
+            if (isOldEnough) {
+                localStorage.setItem('age-verified', 'true');
+                showMainApp();
+            } else {
+                document.getElementById('ageError').classList.remove('hidden');
+            }
+        }
+
+        function showMainApp() {
+            document.getElementById('ageGate').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+        }
+
+        // Category Filters
+        function renderCategoryFilters() {
+            const categories = ['All', 'Whiskey', 'Gin', 'Vodka', 'Specialty'];
+            const container = document.getElementById('categoryFilters');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="setFilter('${cat}')" class="px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${
+                    currentFilter === cat 
+                        ? 'bg-[#b91c1c] text-white shadow-lg' 
+                        : 'bg-white text-stone-600 border border-stone-200 hover:border-[#b91c1c] hover:text-[#b91c1c]'
+                }">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function setFilter(category) {
+            currentFilter = category;
+            renderCategoryFilters();
+            renderProducts();
+        }
+
+        // Search
+        function handleSearch(value) {
+            searchQuery = value;
+            renderProducts();
+        }
+
+        // Products
+        function renderProducts() {
+            const container = document.getElementById('productGrid');
+            const noResults = document.getElementById('noResults');
+
+            const filteredProducts = products.filter(p => {
+                const matchesCategory = currentFilter === 'All' || p.category === currentFilter;
+                const matchesSearch = searchQuery === '' || 
+                    p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    p.category.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filteredProducts.length === 0) {
+                container.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+            container.innerHTML = filteredProducts.map((product, index) => `
+                <div class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-stone-100 flex flex-col relative product-card hover-lift" style="animation-delay: ${index * 0.1}s">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-stone-50">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover product-image">
+                        <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg text-[10px] font-black text-[#b91c1c] shadow-sm border border-stone-100 uppercase tracking-widest z-10">
+                            ${product.abv} ABV
+                        </div>
+                        ${!product.availability ? `
+                            <div class="absolute inset-0 bg-stone-900/70 backdrop-blur-[2px] flex items-center justify-center">
+                                <span class="text-white font-black tracking-[0.3em] uppercase border-2 border-white px-6 py-2 text-sm">Sold Out</span>
+                            </div>
+                        ` : ''}
+                        ${product.availability ? `
+                            <div class="absolute inset-0 bg-[#b91c1c]/0 group-hover:bg-[#b91c1c]/10 transition-colors duration-300 flex items-end justify-end p-4 opacity-0 group-hover:opacity-100">
+                                <button onclick="addToCart('${product.id}')" class="bg-[#b91c1c] text-white px-6 py-3 rounded-full font-black text-xs uppercase tracking-widest shadow-lg hover:bg-[#991b1b] hover:scale-105 transition-all btn-primary">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="mb-3">
+                            <span class="text-[10px] uppercase font-black tracking-[0.2em] text-[#b91c1c] mb-1 block">${product.category}</span>
+                            <h3 class="text-xl font-black text-stone-900 tracking-tight leading-tight uppercase group-hover:text-[#b91c1c] transition-colors">${product.name}</h3>
+                        </div>
+                        <p class="text-stone-500 text-sm font-medium line-clamp-2 mb-6 flex-grow leading-relaxed">${product.description}</p>
+                        <div class="flex items-center justify-between mt-auto pt-6 border-t border-stone-50">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] uppercase font-bold text-stone-400 tracking-widest mb-0.5">Price</span>
+                                <span class="text-xl font-black text-stone-900 tracking-tighter">UGX ${product.price.toLocaleString()}</span>
+                            </div>
+                            <button onclick="addToCart('${product.id}')" ${!product.availability ? 'disabled' : ''} class="w-14 h-14 flex items-center justify-center rounded-xl transition-all shadow-md hover:shadow-lg ${product.availability ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b] hover:scale-110' : 'bg-stone-100 text-stone-300 cursor-not-allowed'}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function resetFilters() {
+            currentFilter = 'All';
+            searchQuery = '';
+            document.getElementById('searchInput').value = '';
+            renderCategoryFilters();
+            renderProducts();
+        }
+
+        function scrollToCatalog() {
+            const catalog = document.getElementById('catalog');
+            catalog.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Scroll Event for Back to Top Button
+        window.addEventListener('scroll', () => {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        // Cart Functions
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                cart = cart.map(item => item.id === productId ? { ...item, quantity: item.quantity + 1 } : item);
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            saveCart();
+            updateCartCount();
+            openCart();
+        }
+
+        function updateQuantity(productId, delta) {
+            cart = cart.map(item => {
+                if (item.id === productId) {
+                    const newQty = Math.max(1, item.quantity + delta);
+                    return { ...item, quantity: newQty };
+                }
+                return item;
+            });
+            saveCart();
+            updateCartCount();
+            renderCartItems();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCart();
+            updateCartCount();
+            renderCartItems();
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((acc, item) => acc + item.quantity, 0);
+            const badge = document.getElementById('cartCount');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function openCart() {
+            document.getElementById('cartSidebar').classList.remove('hidden');
+            renderCartItems();
+        }
+
+        function closeCart() {
+            document.getElementById('cartSidebar').classList.add('hidden');
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cartItems');
+            const footer = document.getElementById('cartFooter');
+            const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-stone-300 space-y-6">
+                        <div class="p-8 bg-stone-50 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xl font-black text-stone-900 uppercase tracking-tight">Cart Empty</p>
+                            <p class="text-sm font-medium text-stone-400 mt-2">Discover our premium spirits.</p>
+                        </div>
+                        <button onclick="closeCart()" class="bg-[#b91c1c] text-white px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest shadow-lg hover:bg-[#991b1b] transition-all">Browse Spirits</button>
+                    </div>
+                `;
+                footer.classList.add('hidden');
+                return;
+            }
+
+            footer.classList.remove('hidden');
+            document.getElementById('cartTotal').textContent = `UGX ${total.toLocaleString()}`;
+
+            if (cartStep === 'cart') {
+                document.getElementById('cartActions').innerHTML = `
+                    <button onclick="goToCheckout()" class="w-full bg-[#b91c1c] text-white font-black py-5 rounded-2xl hover:bg-[#991b1b] transition-all flex items-center justify-center gap-3 uppercase tracking-widest shadow-xl active:scale-95">
+                        Delivery Details
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                `;
+
+                container.innerHTML = cart.map(item => `
+                    <div class="flex gap-5 p-4 border border-stone-100 rounded-2xl group hover:border-[#b91c1c]/30 transition-all">
+                        <div class="w-24 h-24 bg-stone-50 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
+                            <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-grow flex flex-col">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-black text-stone-900 leading-tight uppercase text-sm">${item.name}</h4>
+                                <button onclick="removeFromCart('${item.id}')" class="text-stone-300 hover:text-red-600 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="text-xs font-black text-[#b91c1c] mt-1">UGX ${item.price.toLocaleString()}</p>
+                            <div class="flex items-center justify-between mt-auto">
+                                <div class="flex items-center bg-stone-100 rounded-lg p-1">
+                                    <button onclick="updateQuantity('${item.id}', -1)" class="w-8 h-8 flex items-center justify-center font-black hover:text-[#b91c1c] transition-colors">-</button>
+                                    <span class="mx-3 font-black text-xs w-6 text-center text-stone-900">${item.quantity}</span>
+                                    <button onclick="updateQuantity('${item.id}', 1)" class="w-8 h-8 flex items-center justify-center font-black hover:text-[#b91c1c] transition-colors">+</button>
+                                </div>
+                                <span class="font-black text-stone-900 text-xs">UGX ${(item.price * item.quantity).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('cartActions').innerHTML = `
+                    <button onclick="goBackToCart()" class="text-[#b91c1c] text-xs font-black uppercase tracking-widest flex items-center gap-2 hover:translate-x-[-4px] transition-transform mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" /></svg>
+                        Order Items
+                    </button>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-[10px] font-black text-[#b91c1c] uppercase tracking-widest mb-2">Recipient Name</label>
+                            <input type="text" id="customerName" value="${orderForm.customerName}" onchange="updateOrderForm('customerName', this.value)" class="w-full border-stone-200 border-2 rounded-xl p-4 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-bold text-stone-900" placeholder="E.G. JOHN DOE">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-[#b91c1c] uppercase tracking-widest mb-2">Uganda Delivery Address</label>
+                            <textarea id="deliveryAddress" onchange="updateOrderForm('deliveryAddress', this.value)" rows="3" class="w-full border-stone-200 border-2 rounded-xl p-4 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-bold text-stone-900" placeholder="E.G. KAMPALA, PLOT 23...">${orderForm.deliveryAddress}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-[#b91c1c] uppercase tracking-widest mb-2">WhatsApp / Phone</label>
+                            <input type="tel" id="phoneNumber" value="${orderForm.phoneNumber}" onchange="updateOrderForm('phoneNumber', this.value)" class="w-full border-stone-200 border-2 rounded-xl p-4 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-bold text-stone-900" placeholder="E.G. 0758 238514">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-[#b91c1c] uppercase tracking-widest mb-2">Additional Notes</label>
+                            <input type="text" id="notes" value="${orderForm.notes}" onchange="updateOrderForm('notes', this.value)" class="w-full border-stone-200 border-2 rounded-xl p-4 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-bold text-stone-900" placeholder="GIFT WRAP? PREFERRED TIME?">
+                        </div>
+                    </div>
+                    <button onclick="submitOrder()" ${!orderForm.customerName || !orderForm.deliveryAddress || !orderForm.phoneNumber ? 'disabled' : ''} class="w-full bg-[#25D366] text-white font-black py-5 rounded-2xl hover:bg-[#128C7E] disabled:bg-stone-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 uppercase tracking-widest shadow-xl active:scale-95 mt-6">
+                        Submit via WhatsApp
+                    </button>
+                `;
+
+                container.innerHTML = '<div class="space-y-6"></div>';
+            }
+        }
+
+        function goToCheckout() {
+            cartStep = 'checkout';
+            renderCartItems();
+        }
+
+        function goBackToCart() {
+            cartStep = 'cart';
+            renderCartItems();
+        }
+
+        function updateOrderForm(field, value) {
+            orderForm[field] = value;
+        }
+
+        function submitOrder() {
+            const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            
+            const orderItemsText = cart.map(i => 
+                `• *${i.name}*\n  Qty: ${i.quantity}\n  Price: UGX ${(i.price * i.quantity).toLocaleString()}\n  Ref: ${i.image}`
+            ).join('\n\n');
+
+            const orderText = `*🛒 NEW ORDER - GAMA DISTILLERS UGANDA*\n\n` +
+                `*👤 CUSTOMER DETAILS*\n` +
+                `*Name:* ${orderForm.customerName}\n` +
+                `*Address:* ${orderForm.deliveryAddress}\n` +
+                `*Contact:* ${orderForm.phoneNumber}\n` +
+                (orderForm.notes ? `*Notes:* ${orderForm.notes}\n` : '') +
+                `\n*📦 ORDER ITEMS*\n` +
+                orderItemsText +
+                `\n\n*💰 TOTAL AMOUNT:* UGX ${subtotal.toLocaleString()}\n\n` +
+                `_Please confirm delivery schedule._`;
+
+            const encoded = encodeURIComponent(orderText);
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, '_blank');
+        }
+
+        function contactUs() {
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank');
+        }
+
+        // AI Recommendation
+        async function fetchAiRecommendation(mood, occasion) {
+            document.getElementById('aiLoading').classList.remove('hidden');
+            document.getElementById('aiRecommendation').classList.add('hidden');
+
+            try {
+                // Since we don't have API access in static HTML, we'll provide a simulated response
+                // In production, you'd call your backend API here
+                const recommendation = await getSimulatedRecommendation(mood, occasion);
+                
+                document.getElementById('aiLoading').classList.add('hidden');
+                document.getElementById('aiSuggestion').textContent = recommendation.suggestion;
+                document.getElementById('aiReasoning').textContent = `"${recommendation.reasoning}"`;
+                document.getElementById('aiRecommendation').classList.remove('hidden');
+            } catch (error) {
+                document.getElementById('aiLoading').classList.add('hidden');
+                // Fallback to simulated recommendation
+                const recommendation = await getSimulatedRecommendation(mood, occasion);
+                document.getElementById('aiSuggestion').textContent = recommendation.suggestion;
+                document.getElementById('aiReasoning').textContent = `"${recommendation.reasoning}"`;
+                document.getElementById('aiRecommendation').classList.remove('hidden');
+            }
+        }
+
+        async function getSimulatedRecommendation(mood, occasion) {
+            // Simulated AI response based on products
+            const recommendations = [
+                {
+                    suggestion: "Cock Premium Whiskey",
+                    reasoning: "For a celebration of this magnitude, the Cock Premium Whiskey delivers sophistication with notes of toasted oak and native spices that embody the spirit of Uganda's finest craftsmanship."
+                },
+                {
+                    suggestion: "Cock Uganda Flavoured Gin",
+                    reasoning: "A crisp, botanical-forward spirit perfect for contemporary celebrations. Triple-distilled with a unique Ugandan twist that creates a memorable drinking experience."
+                },
+                {
+                    suggestion: "Jogoo Pineapple Vodka",
+                    reasoning: "The vibrant tropical notes of Jogoo Pineapple Vodka bring a burst of African sunshine to any celebration, making it perfect for toast-worthy moments."
+                },
+                {
+                    suggestion: "Cock Sherry Liqueur",
+                    reasoning: "Rich and velvety, this premium liqueur offers a sophisticated finish to any evening. Perfect for those who appreciate depth and complexity in their drink."
+                }
+            ];
+
+            // Return a random recommendation
+            return recommendations[Math.floor(Math.random() * recommendations.length)];
+        }
+
+        function closeAiRecommendation() {
+            document.getElementById('aiRecommendation').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
