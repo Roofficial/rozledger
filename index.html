@@ -139,22 +139,76 @@
             transform: scale(1.05);
         }
         
-        /* Product Card Hover */
+        /* Product Card Hover with Zoom */
         .product-card {
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s ease;
         }
         
         .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-image-container {
+            overflow: hidden;
         }
         
         .product-image {
-            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.5s ease;
         }
         
         .product-card:hover .product-image {
-            transform: scale(1.1);
+            transform: scale(1.15);
+        }
+        
+        /* Zoom Modal Styles */
+        .zoom-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .zoom-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .zoom-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .zoom-modal.active img {
+            transform: scale(1);
+        }
+        
+        .zoom-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .zoom-close:hover {
+            transform: rotate(90deg);
         }
         
         /* Button Hover Effects */
@@ -233,41 +287,120 @@
             transform: translateY(-4px);
         }
         
-        /* Hero Parallax Effect */
-        .hero-parallax {
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
+        /* Marquee Animation */
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+        }
+        
+        .marquee-content:hover {
+            animation-play-state: paused;
+        }
+        
+        .marquee-item {
+            display: inline-block;
+            padding: 0 20px;
+        }
+        
+        .marquee-item img {
+            height: 250px;
+            width: auto;
+            object-fit: contain;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            filter: brightness(0.9) contrast(1.1);
+        }
+        
+        .marquee-item img:hover {
+            opacity: 1;
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body class="font-sans bg-stone-50">
-    <!-- Age Gate Modal -->
-    <div id="ageGate" class="fixed inset-0 z-[100] bg-stone-900 flex items-center justify-center p-6 text-center hidden">
-        <div class="max-w-md w-full bg-white rounded-2xl p-10 shadow-2xl space-y-8">
-            <div class="space-y-4">
-                <h1 class="text-4xl font-bold text-amber-900">Rozan the Ledger</h1>
-                <p class="text-stone-500 font-medium">Fine Spirits from Gama Distillers</p>
-                <div class="h-px bg-stone-200 w-16 mx-auto"></div>
+    <!-- Age Gate Modal with Customer Type Selection -->
+    <div id="ageGate" class="fixed inset-0 z-[100] bg-stone-900 flex items-center justify-center p-4 text-center">
+        <div class="max-w-md w-full bg-white rounded-2xl p-8 shadow-2xl space-y-6">
+            <div class="space-y-3 text-center">
+                <div class="w-20 h-20 mx-auto bg-amber-900 rounded-full flex items-center justify-center">
+                    <span class="text-4xl">🥃</span>
+                </div>
+                <h1 class="text-2xl font-black text-amber-900 uppercase tracking-tight">Rozan the Ledger</h1>
+                <p class="text-stone-500 text-sm font-medium">Fine Spirits from Gama Distillers</p>
             </div>
-            <div class="space-y-6">
-                <p class="text-lg text-stone-700">
-                    You must be of legal drinking age to access this marketplace. 
-                    Are you 18 years or older?
+            
+            <!-- Age Verification -->
+            <div id="ageVerificationStep">
+                <p class="text-stone-600 mb-6">
+                    You must be of legal drinking age to access this marketplace.
                 </p>
                 <div class="flex flex-col gap-3">
-                    <button onclick="verifyAge(true)" class="w-full bg-amber-900 hover:bg-amber-800 text-white font-semibold py-4 rounded-xl transition-all transform active:scale-95 shadow-lg">
+                    <button onclick="verifyAge()" class="w-full bg-amber-900 hover:bg-amber-800 text-white font-semibold py-4 rounded-xl transition-all transform active:scale-95 shadow-lg">
                         Yes, I am 18 or older
                     </button>
-                    <button onclick="verifyAge(false)" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-600 font-semibold py-4 rounded-xl transition-all">
+                    <button onclick="rejectAge()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-600 font-semibold py-4 rounded-xl transition-all">
                         No, exit
                     </button>
                 </div>
-                <div id="ageError" class="bg-red-50 text-red-600 p-4 rounded-lg border border-red-100 text-sm hidden">
+                <div id="ageError" class="bg-red-50 text-red-600 p-4 rounded-lg border border-red-100 text-sm mt-4 hidden">
                     We're sorry, you must be of legal drinking age to browse our collection.
                 </div>
             </div>
+            
+            <!-- Customer Type Selection -->
+            <div id="customerTypeStep" class="hidden space-y-6">
+                <p class="text-lg text-stone-700 font-medium">Select your customer type:</p>
+                <div class="grid grid-cols-1 gap-4">
+                    <button onclick="selectCustomerType('retail')" class="p-6 border-2 border-stone-200 rounded-xl hover:border-[#b91c1c] hover:bg-red-50 transition-all text-left group">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-stone-100 rounded-xl flex items-center justify-center group-hover:bg-[#b91c1c] transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-stone-600 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-stone-900 text-lg">Retail Customer</h3>
+                                <p class="text-stone-500 text-sm mt-1">Buy individual bottles for personal use</p>
+                                <ul class="text-xs text-stone-400 mt-2 space-y-1">
+                                    <li>• Standard pricing per bottle</li>
+                                    <li>• Free delivery in Kampala</li>
+                                    <li>• Minimum order: 1 bottle</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <button onclick="selectCustomerType('b2b')" class="p-6 border-2 border-amber-400 bg-amber-50 rounded-xl hover:bg-amber-100 transition-all text-left group">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-amber-400 rounded-xl flex items-center justify-center group-hover:bg-amber-500 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-stone-900 text-lg">B2B / Wholesale</h3>
+                                <p class="text-stone-500 text-sm mt-1">Buy in trays and bulk for your business</p>
+                                <ul class="text-xs text-stone-500 mt-2 space-y-1">
+                                    <li>• Tray pricing (12 bottles = 1 tray)</li>
+                                    <li>• Bulk discounts available</li>
+                                    <li>• Minimum order: 1 tray</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            
             <p class="text-xs text-stone-400 uppercase tracking-widest">Drink Responsibly</p>
         </div>
     </div>
@@ -279,17 +412,19 @@
 
         <!-- Header -->
         <header class="sticky top-0 z-50 bg-white shadow-sm border-b border-stone-200">
-            <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
+            <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
                 <div class="flex items-center gap-3 flex-shrink-0">
-                    <div class="w-12 h-12 bg-[#b91c1c] rounded-lg flex items-center justify-center text-[#fbbf24] font-black text-2xl shadow-lg border-2 border-[#fbbf24]/30">G</div>
+                    <div class="w-12 h-12 rounded-lg flex items-center justify-center">
+                        <img src="logo.jfif" alt="Gama Distillers" class="w-full h-full object-contain">
+                    </div>
                     <div class="hidden sm:block">
                         <h1 class="text-xl font-black leading-none text-stone-900 tracking-tight uppercase">Gama Distillers</h1>
                         <span class="text-[10px] tracking-[0.3em] uppercase text-[#b91c1c] font-black">Rozan The Ledger</span>
                     </div>
                 </div>
 
-                <!-- Search Bar -->
-                <div class="flex-grow max-w-md relative group">
+                <!-- Search Bar with Live Results -->
+                <div class="flex-grow max-w-lg relative group">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-400 group-focus-within:text-[#b91c1c] transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -298,9 +433,32 @@
                     <input type="text" id="searchInput" placeholder="Search Cock, Jogoo or spirits..." 
                         class="block w-full pl-10 pr-4 py-2 bg-stone-100 border-2 border-transparent rounded-full text-sm focus:ring-0 focus:border-[#b91c1c]/20 focus:bg-white transition-all outline-none text-stone-800"
                         oninput="handleSearch(this.value)">
+                    
+                    <!-- Live Search Results Dropdown -->
+                    <div id="searchResults" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-stone-200 overflow-hidden hidden z-50 max-h-80 overflow-y-auto">
+                        <!-- Results populated by JS -->
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center gap-6">
+                    <button onclick="scrollToCatalog()" class="text-stone-600 font-bold text-xs uppercase tracking-wider hover:text-[#b91c1c] transition-colors">Products</button>
+                    <button onclick="scrollToAbout()" class="text-stone-600 font-bold text-xs uppercase tracking-wider hover:text-[#b91c1c] transition-colors">About</button>
+                    <button onclick="showB2BRegistration()" class="text-amber-600 font-bold text-xs uppercase tracking-wider hover:text-amber-700 transition-colors">B2B</button>
                 </div>
 
                 <div class="flex items-center gap-3 flex-shrink-0">
+                    <button onclick="openWishlist()" class="relative p-3 bg-stone-100 text-stone-600 rounded-xl hover:bg-stone-200 transition-all flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <span id="wishlistCount" class="absolute -top-1 -right-1 bg-[#b91c1c] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                    </button>
+                    <button onclick="openDashboard()" class="p-3 bg-stone-100 text-stone-600 rounded-xl hover:bg-stone-200 transition-all flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                        <span class="hidden lg:inline font-bold text-xs">Dashboard</span>
+                    </button>
                     <button onclick="openCart()" class="relative p-3 bg-[#b91c1c] text-white rounded-xl hover:bg-[#991b1b] transition-all group active:scale-95 shadow-md flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -312,57 +470,31 @@
         </header>
 
         <main class="flex-grow">
-            <!-- Hero Section -->
-            <section class="relative min-h-[600px] flex items-center px-6 overflow-hidden bg-stone-900 hero-parallax">
-                <div class="absolute inset-0 bg-gradient-to-r from-stone-900 via-stone-900/85 to-transparent z-10"></div>
-                <div class="absolute inset-0">
-                    <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=2000" alt="Background" class="w-full h-full object-cover opacity-60">
-                </div>
-                
-                <div class="relative z-20 max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-16 items-center">
-                    <div class="animate-fade-in-up">
-                        <span class="inline-block text-[#fbbf24] font-black uppercase tracking-[0.5em] text-xs mb-6 animate-pulse-soft">Ugandan Leading Premium Company</span>
-                        <h2 class="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-none tracking-tight">GAMA DISTILLERS LTD</h2>
-                        <p class="text-stone-200 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-lg">
-                            Home of Uganda's finest spirits: <span class="text-[#fbbf24] font-bold">Cock</span> & <span class="text-[#fbbf24] font-bold">Jogoo</span>. Crafted for the Pearl of Africa.
-                        </p>
-                        <div class="flex flex-wrap gap-4">
-                            <button onclick="scrollToCatalog()" class="bg-[#b91c1c] text-white px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-[#991b1b] transition-all shadow-xl hover:shadow-2xl btn-primary">
-                                Shop Now
-                            </button>
-                            <button onclick="fetchAiRecommendation('sophisticated', 'celebration')" class="bg-white/10 backdrop-blur-md text-white border-2 border-white/30 px-8 py-5 rounded-full font-bold hover:bg-white hover:text-[#b91c1c] transition-all flex items-center gap-3 active:scale-95">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14H8a4 4 0 01-4-4V5h12v5a4 4 0 01-4 4z" />
-                                </svg>
-                                Ask Sommelier
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="hidden lg:flex justify-end animate-fade-in-up delay-200">
-                        <div class="relative">
-                            <div class="absolute -inset-6 bg-[#fbbf24]/20 blur-3xl rounded-full"></div>
-                            <img src="https://images.unsplash.com/photo-1594498653385-d5172c532c00?auto=format&fit=crop&q=80&w=800" alt="Featured Product" class="relative w-80 h-auto drop-shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-700">
-                        </div>
+            <!-- Hero Section with Marquee Slideshow -->
+            <section class="h-[300px] flex items-center px-4 overflow-hidden bg-gradient-to-r from-stone-900 via-stone-800 to-black">
+                <!-- Continuous Marquee Slideshow -->
+                <div class="marquee-container w-full">
+                    <div class="marquee-content" id="heroSlideshow">
+                        <!-- Slides populated by JS -->
                     </div>
                 </div>
             </section>
 
             <!-- AI Recommendation Bar -->
-            <div id="aiRecommendation" class="max-w-5xl mx-auto px-6 -mt-16 relative z-30 hidden">
-                <div class="bg-white border-b-4 border-[#b91c1c] shadow-2xl rounded-2xl p-8 md:p-10 flex flex-col md:flex-row gap-8 items-center animate-scale-in">
-                    <div class="flex-shrink-0 w-20 h-20 bg-[#b91c1c] rounded-full flex items-center justify-center text-[#fbbf24] shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+            <div id="aiRecommendation" class="max-w-6xl mx-auto px-4 sm:px-6 -mt-16 relative z-30 hidden">
+                <div class="bg-white border-b-4 border-[#b91c1c] shadow-2xl rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-center animate-scale-in">
+                    <div class="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 bg-[#b91c1c] rounded-full flex items-center justify-center text-[#fbbf24] shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14H8a4 4 0 01-4-4V5h12v5a4 4 0 01-4 4z" />
                         </svg>
                     </div>
                     <div class="flex-grow text-center md:text-left">
                         <h4 class="font-black text-[#b91c1c] uppercase text-xs tracking-[0.2em] mb-2">Expert Recommendation</h4>
-                        <p id="aiSuggestion" class="text-2xl md:text-3xl font-black text-stone-900 mb-2"></p>
-                        <p id="aiReasoning" class="text-stone-600 text-base font-medium leading-relaxed"></p>
+                        <p id="aiSuggestion" class="text-xl md:text-2xl lg:text-3xl font-black text-stone-900 mb-2"></p>
+                        <p id="aiReasoning" class="text-stone-600 text-sm md:text-base font-medium leading-relaxed"></p>
                     </div>
                     <button onclick="closeAiRecommendation()" class="flex-shrink-0 p-3 text-stone-300 hover:text-stone-600 hover:bg-stone-100 rounded-full transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
@@ -370,29 +502,35 @@
             </div>
 
             <!-- Loading indicator for AI -->
-            <div id="aiLoading" class="max-w-5xl mx-auto px-6 -mt-16 relative z-30 hidden">
-                <div class="bg-white shadow-2xl rounded-2xl p-10 flex items-center justify-center animate-scale-in">
-                    <svg class="animate-spin h-10 w-10 text-[#b91c1c]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <div id="aiLoading" class="max-w-6xl mx-auto px-4 sm:px-6 -mt-16 relative z-30 hidden">
+                <div class="bg-white shadow-2xl rounded-2xl p-8 md:p-10 flex items-center justify-center animate-scale-in">
+                    <svg class="animate-spin h-8 w-8 md:h-10 md:w-10 text-[#b91c1c]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span class="ml-4 text-stone-600 font-medium text-lg">Getting expert recommendation...</span>
+                    <span class="ml-4 text-stone-600 font-medium text-base md:text-lg">Getting expert recommendation...</span>
                 </div>
             </div>
 
             <!-- Catalog -->
-            <section id="catalog" class="max-w-7xl mx-auto px-6 py-24 scroll-mt-24">
-                <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+            <section id="catalog" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 scroll-mt-24">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
                     <div class="border-l-4 border-[#b91c1c] pl-6 animate-slide-up">
-                        <h2 class="text-4xl md:text-5xl font-black text-stone-900 mb-3 tracking-tight uppercase">Product Catalog</h2>
-                        <p class="text-stone-500 max-w-xl font-medium text-lg">Authentic spirits from Gama Distillers. Direct fulfillment across Uganda.</p>
+                        <h2 class="text-3xl md:text-4xl font-black text-stone-900 mb-2 tracking-tight uppercase">Product Catalog</h2>
+                        <p class="text-stone-500 max-w-xl font-medium">Authentic spirits from Gama Distillers. Direct fulfillment across Uganda.</p>
                     </div>
-                    <div class="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar" id="categoryFilters">
+                    
+                    <!-- Search Results Info -->
+                    <div id="searchInfo" class="hidden bg-[#b91c1c]/10 px-4 py-2 rounded-lg">
+                        <!-- Populated by JS -->
+                    </div>
+                    
+                    <div class="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar" id="categoryFilters">
                         <!-- Filters will be populated by JS -->
                     </div>
                 </div>
 
-                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <!-- Products will be populated by JS -->
                 </div>
 
@@ -405,6 +543,105 @@
                         <button onclick="resetFilters()" class="bg-[#b91c1c] text-white px-8 py-3 rounded-full font-black uppercase tracking-widest hover:bg-[#991b1b] transition-all shadow-lg btn-primary">
                             Reset Selection
                         </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Us Section -->
+            <section id="about" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 scroll-mt-24">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-8">
+                        <div class="inline-flex items-center gap-3 bg-[#b91c1c]/10 px-4 py-2 rounded-full">
+                            <span class="w-2 h-2 bg-[#b91c1c] rounded-full animate-pulse"></span>
+                            <span class="text-[#b91c1c] font-bold uppercase tracking-widest text-xs">Our Story</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-black text-stone-900 leading-tight uppercase tracking-tight">
+                            Crafting Uganda's <span class="text-[#b91c1c]">Finest Spirits</span> Since 2010
+                        </h2>
+                        <p class="text-lg text-stone-600 leading-relaxed font-medium">
+                            Gama Distillers Uganda stands at the forefront of East Africa's spirits industry, blending traditional craftsmanship with modern innovation to create world-class beverages that celebrate our rich cultural heritage.
+                        </p>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="bg-white rounded-2xl p-6 shadow-lg border border-stone-100">
+                                <div class="w-14 h-14 bg-[#b91c1c] rounded-2xl flex items-center justify-center mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                </div>
+                                <h3 class="font-black text-stone-900 uppercase text-lg mb-2">Premium Quality</h3>
+                                <p class="text-stone-500 text-sm font-medium">ISO-certified production ensuring consistent excellence in every bottle.</p>
+                            </div>
+                            <div class="bg-white rounded-2xl p-6 shadow-lg border border-stone-100">
+                                <div class="w-14 h-14 bg-amber-500 rounded-2xl flex items-center justify-center mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h3 class="font-black text-stone-900 uppercase text-lg mb-2">East African Owned</h3>
+                                <p class="text-stone-500 text-sm font-medium">Proudly Ugandan, supporting local communities and economies.</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <span class="font-bold text-stone-700 text-sm">14+ Years Experience</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <span class="font-bold text-stone-700 text-sm">50+ Distribution Points</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <span class="font-bold text-stone-700 text-sm">100% Authentic Products</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="bg-gradient-to-br from-[#b91c1c] to-red-800 rounded-3xl p-8 text-white">
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="text-center">
+                                    <div class="text-5xl font-black mb-2">14+</div>
+                                    <div class="text-sm font-bold uppercase tracking-widest opacity-80">Years of<br>Excellence</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-5xl font-black mb-2">5</div>
+                                    <div class="text-sm font-bold uppercase tracking-widest opacity-80">Premium<br>Brands</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-5xl font-black mb-2">50+</div>
+                                    <div class="text-sm font-bold uppercase tracking-widest opacity-80">Distribution<br>Partners</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-5xl font-black mb-2">1M+</div>
+                                    <div class="text-sm font-bold uppercase tracking-widest opacity-80">Happy<br>Customers</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl p-6 shadow-xl">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-black text-stone-900 uppercase">Quality Guaranteed</p>
+                                    <p class="text-sm text-stone-500 font-medium">ISO 9001:2015 Certified</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -433,7 +670,9 @@
             <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
                 <div class="space-y-6">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-[#b91c1c] rounded-lg flex items-center justify-center text-[#fbbf24] font-black text-xl">G</div>
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center">
+                            <img src="logo.jfif" alt="Gama Distillers" class="w-full h-full object-contain">
+                        </div>
                         <h1 class="text-2xl font-black uppercase tracking-tighter">Gama Distillers</h1>
                     </div>
                     <p class="text-stone-400 text-sm font-medium leading-relaxed">
@@ -482,90 +721,494 @@
         </footer>
     </div>
 
-    <!-- Cart Sidebar -->
-    <div id="cartSidebar" class="fixed inset-0 z-[110] overflow-hidden hidden">
-        <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-md transition-opacity" onclick="closeCart()"></div>
-        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col animate-slide-in border-l border-stone-200">
-            <div class="px-6 py-6 border-b flex items-center justify-between bg-stone-50">
-                <div>
-                    <h2 class="text-2xl font-black text-stone-900 uppercase tracking-tighter">Your Order</h2>
-                    <p class="text-[10px] font-bold text-[#b91c1c] uppercase tracking-widest mt-1">Gama Distillers Uganda</p>
+    <!-- Image Zoom Modal -->
+    <div id="zoomModal" class="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center hidden" onclick="closeZoom()">
+        <button onclick="closeZoom()" class="absolute top-6 right-6 w-12 h-12 bg-white rounded-full flex items-center justify-center hover:rotate-90 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <img id="zoomImage" src="" alt="Zoomed Product" class="max-w-[90%] max-h-[90%] object-contain" onclick="event.stopPropagation()">
+        <div id="zoomProductName" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/90 px-6 py-2 rounded-full text-sm font-bold text-stone-900"></div>
+    </div>
+
+    <!-- Product Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 z-[210] overflow-hidden hidden" onclick="closePreview()">
+        <div class="absolute inset-0 bg-stone-900/70 backdrop-blur-md transition-opacity" onclick="closePreview()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+            <div class="relative bg-gradient-to-r from-[#b91c1c] to-red-800 p-6 text-white">
+                <button onclick="closePreview()" class="absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-black uppercase tracking-tighter text-lg">Product Preview</h3>
+                        <p class="text-xs opacity-80 font-bold uppercase tracking-widest">Product Details</p>
+                    </div>
                 </div>
-                <button onclick="closeCart()" class="p-2 hover:bg-stone-200 rounded-full transition-colors text-stone-400">
+            </div>
+            <div class="p-6">
+                <div class="flex gap-6">
+                    <div class="w-32 h-32 bg-stone-100 rounded-xl overflow-hidden flex-shrink-0">
+                        <img id="previewImage" src="" alt="Product" class="w-full h-full object-contain p-2">
+                    </div>
+                    <div class="flex-grow">
+                        <p id="previewCategory" class="text-xs font-bold text-[#b91c1c] uppercase tracking-widest mb-1"></p>
+                        <h4 id="previewName" class="font-black text-stone-900 leading-tight uppercase text-xl"></h4>
+                        <p id="previewPrice" class="text-lg font-black text-[#b91c1c] mt-2"></p>
+                        <div class="flex items-center gap-4 mt-3">
+                            <span class="text-xs bg-stone-100 text-stone-600 px-2 py-1 rounded-lg">
+                                <strong>ABV:</strong> <span id="previewAbv"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 bg-stone-50 rounded-xl">
+                    <p class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Description</p>
+                    <p id="previewDescription" class="text-sm text-stone-700 leading-relaxed"></p>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button onclick="closePreview()" class="flex-1 bg-stone-100 text-stone-600 py-3 rounded-xl font-bold uppercase tracking-widest hover:bg-stone-200 transition-colors">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wishlist Modal -->
+    <div id="wishlistModal" class="fixed inset-0 z-[120] overflow-hidden hidden">
+        <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-md transition-opacity" onclick="closeWishlist()"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col animate-slide-in border-l border-stone-200">
+            <div class="px-6 py-6 border-b flex items-center justify-between bg-gradient-to-r from-[#b91c1c] to-red-800 text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <img src="logo.jfif" alt="Gama Distillers" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black uppercase tracking-tighter">My Wishlist</h2>
+                        <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Saved Spirits</p>
+                    </div>
+                </div>
+                <button onclick="closeWishlist()" class="p-2 hover:bg-white/20 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
+            
+            <div id="wishlistContent" class="flex-grow overflow-y-auto bg-stone-50 p-6">
+                <div id="wishlistEmpty" class="flex flex-col items-center justify-center h-full text-stone-300 space-y-6">
+                    <div class="p-8 bg-white rounded-full shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xl font-black text-stone-900 uppercase tracking-tight">Wishlist Empty</p>
+                        <p class="text-sm font-medium text-stone-400 mt-2">Save your favorite spirits here</p>
+                    </div>
+                    <button onclick="closeWishlist(); scrollToCatalog();" class="bg-[#b91c1c] text-white px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest shadow-lg hover:bg-[#991b1b] transition-all">Browse Spirits</button>
+                </div>
+                
+                <div id="wishlistItems" class="space-y-4 hidden">
+                    <!-- Wishlist items populated by JS -->
+                </div>
+            </div>
+            
+            <div id="wishlistFooter" class="p-6 border-t bg-white hidden">
+                <div class="flex gap-3">
+                    <button onclick="clearWishlist()" class="flex-1 bg-stone-100 text-stone-600 py-3 rounded-xl font-black uppercase tracking-widest hover:bg-stone-200 transition-all">
+                        Clear All
+                    </button>
+                    <button onclick="addAllToCartFromWishlist()" class="flex-1 bg-[#b91c1c] text-white py-3 rounded-xl font-black uppercase tracking-widest hover:bg-[#991b1b] transition-all shadow-lg flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        Add All to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <div id="cartItems" class="flex-grow overflow-y-auto px-6 py-6 bg-white">
-                <!-- Cart items will be populated by JS -->
+    <!-- Dashboard Access Modal -->
+    <div id="dashboardModal" class="fixed inset-0 z-[120] overflow-hidden hidden">
+        <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-md transition-opacity" onclick="closeDashboard()"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col animate-slide-in border-l border-stone-200">
+            <div class="px-6 py-6 border-b flex items-center justify-between bg-gradient-to-r from-[#b91c1c] to-red-800 text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <img src="logo.jfif" alt="Gama Distillers" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black uppercase tracking-tighter">Dashboard</h2>
+                        <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Rozan The Ledger</p>
+                    </div>
+                </div>
+                <button onclick="closeDashboard()" class="p-2 hover:bg-white/20 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Dashboard Content -->
+            <div id="dashboardContent" class="flex-grow overflow-y-auto bg-stone-50 p-6">
+                <!-- Login Form -->
+                <div id="dashboardLogin">
+                    <div class="bg-white rounded-2xl p-8 shadow-lg">
+                        <h3 class="text-xl font-black text-stone-900 mb-2 uppercase tracking-tight">Welcome Back</h3>
+                        <p class="text-stone-500 text-sm mb-6">Sign in to access your dashboard</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-stone-600 uppercase tracking-widest mb-2">Email</label>
+                                <input type="email" id="dashboardEmail" placeholder="your@email.com" 
+                                    class="w-full px-4 py-3 border-2 border-stone-200 rounded-xl focus:border-[#b91c1c] focus:ring-0 outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-stone-600 uppercase tracking-widest mb-2">Password</label>
+                                <input type="password" id="dashboardPassword" placeholder="••••••••"
+                                    class="w-full px-4 py-3 border-2 border-stone-200 rounded-xl focus:border-[#b91c1c] focus:ring-0 outline-none transition-colors">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="dashboardRemember" class="rounded border-stone-300 text-[#b91c1c] focus:ring-[#b91c1c]">
+                                    <span class="text-xs font-medium text-stone-600">Remember me</span>
+                                </label>
+                                <a href="#" class="text-xs font-bold text-[#b91c1c] hover:underline">Forgot password?</a>
+                            </div>
+                            
+                            <button onclick="loginToDashboard()" 
+                                class="w-full bg-[#b91c1c] text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-[#991b1b] transition-all shadow-lg">
+                                Sign In
+                            </button>
+                        </div>
+                        
+                        <div class="mt-6 pt-6 border-t border-stone-200">
+                            <p class="text-xs text-stone-500 text-center mb-4">Or continue with</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button onclick="socialLogin('google')" class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-stone-200 rounded-xl hover:border-stone-300 transition-colors">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                    </svg>
+                                    <span class="text-xs font-bold text-stone-700">Google</span>
+                                </button>
+                                <button onclick="socialLogin('whatsapp')" class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-stone-200 rounded-xl hover:border-stone-300 transition-colors">
+                                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                    </svg>
+                                    <span class="text-xs font-bold text-stone-700">WhatsApp</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <p class="mt-6 text-xs text-stone-400 text-center">
+                            New B2B partner? <a href="#" onclick="showB2BRegistration()" class="text-[#b91c1c] font-bold hover:underline">Apply for wholesale account</a>
+                        </p>
+                    </div>
+                    
+                    <!-- Quick Links -->
+                    <div class="mt-6 space-y-3">
+                        <a href="#" onclick="showB2BRegistration()" class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-stone-900">B2B Wholesale</h4>
+                                <p class="text-xs text-stone-500">Apply for wholesale pricing</p>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                        
+                        <a href="#" onclick="showOrderTracking()" class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-stone-900">Track Order</h4>
+                                <p class="text-xs text-stone-500">Check your order status</p>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                        
+                        <a href="#" onclick="showContactSupport()" class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-stone-900">Support</h4>
+                                <p class="text-xs text-stone-500">Get help with your account</p>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Logged In Dashboard (shown after login) -->
+                <div id="dashboardLoggedIn" class="hidden space-y-6">
+                    <!-- User Info -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 bg-[#b91c1c] rounded-full flex items-center justify-center text-white font-black text-2xl">
+                                JD
+                            </div>
+                            <div>
+                                <h3 class="font-black text-xl text-stone-900">John Doe</h3>
+                                <p class="text-xs text-stone-500">B2B Wholesale Partner</p>
+                                <span class="inline-block mt-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold uppercase rounded-full">Verified</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white rounded-xl p-4 shadow-sm">
+                            <p class="text-xs text-stone-500 uppercase tracking-widest">Total Orders</p>
+                            <p class="text-2xl font-black text-[#b91c1c]">24</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm">
+                            <p class="text-xs text-stone-500 uppercase tracking-widest">Total Spent</p>
+                            <p class="text-2xl font-black text-stone-900">UGX 12.5M</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Orders -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <h4 class="font-black text-stone-900 mb-4 uppercase tracking-tight">Recent Orders</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-stone-50 rounded-xl">
+                                <div>
+                                    <p class="font-bold text-stone-900 text-sm">Order #1234</p>
+                                    <p class="text-xs text-stone-500">2 trays Cock Gin</p>
+                                </div>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Delivered</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-stone-50 rounded-xl">
+                                <div>
+                                    <p class="font-bold text-stone-900 text-sm">Order #1235</p>
+                                    <p class="text-xs text-stone-500">5 trays Jogoo Vodka</p>
+                                </div>
+                                <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">Processing</span>
+                            </div>
+                        </div>
+                        <button onclick="viewAllOrders()" class="w-full mt-4 text-[#b91c1c] text-xs font-bold uppercase tracking-widest hover:underline">
+                            View All Orders →
+                        </button>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="quickOrder()" class="p-4 bg-[#b91c1c] text-white rounded-xl text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span class="text-xs font-bold">Quick Order</span>
+                        </button>
+                        <button onclick="logoutDashboard()" class="p-4 bg-stone-100 text-stone-600 rounded-xl text-center hover:bg-stone-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            <span class="text-xs font-bold">Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Page Cart -->
+    <div id="cartSidebar" class="fixed inset-0 z-[110] overflow-hidden hidden">
+        <div class="absolute inset-0 bg-stone-900/80 backdrop-blur-md transition-opacity" onclick="closeCart()"></div>
+        <div class="absolute inset-0 bg-white flex flex-col animate-fade-in">
+            <!-- Cart Header -->
+            <div class="px-8 py-6 border-b bg-gradient-to-r from-[#b91c1c] to-red-800 text-white flex-shrink-0">
+                <div class="flex items-center justify-between max-w-4xl mx-auto">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-black uppercase tracking-tighter">Your Cart</h2>
+                            <p class="text-xs font-bold uppercase tracking-widest opacity-80" id="cartItemCount">0 items</p>
+                        </div>
+                    </div>
+                    <button onclick="closeCart()" class="p-3 hover:bg-white/20 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
-            <div id="cartFooter" class="p-8 border-t bg-stone-50 space-y-6 hidden">
-                <div class="flex justify-between items-center">
-                    <span class="text-stone-500 font-black uppercase text-xs tracking-widest">Total Order</span>
-                    <span id="cartTotal" class="text-2xl font-black text-[#b91c1c]">UGX 0</span>
-                </div>
-                <div id="cartActions">
-                    <!-- Actions will be populated by JS -->
+            <!-- Cart Content -->
+            <div id="cartContent" class="flex-grow overflow-y-auto bg-stone-50 scroll-smooth">
+                <!-- Cart items populated by JS -->
+            </div>
+
+            <!-- Cart Footer with Order Summary -->
+            <div id="cartFooter" class="bg-white border-t shadow-xl flex-shrink-0">
+                <!-- Order Summary -->
+                <div class="max-w-4xl mx-auto px-4 sm:px-8 py-6">
+                    <div class="grid grid-cols-3 gap-6 mb-6">
+                        <div class="bg-stone-50 rounded-xl p-4">
+                            <p class="text-xs text-stone-500 uppercase tracking-wider mb-1">Subtotal</p>
+                            <p id="cartSubtotal" class="text-xl font-black text-stone-900">UGX 0</p>
+                        </div>
+                        <div class="bg-stone-50 rounded-xl p-4">
+                            <p class="text-xs text-stone-500 uppercase tracking-wider mb-1">Delivery</p>
+                            <p class="text-xl font-black text-green-600">Free</p>
+                        </div>
+                        <div class="bg-[#b91c1c]/5 rounded-xl p-4 border border-[#b91c1c]/20">
+                            <p class="text-xs text-[#b91c1c] uppercase tracking-wider mb-1">Total</p>
+                            <p id="cartTotal" class="text-2xl font-black text-[#b91c1c]">UGX 0</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div id="cartActions" class="space-y-4">
+                        <!-- Actions populated by JS -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Product Data
+        // Product Data with Retail and B2B Tray Pricing
         const products = [
             {
                 id: 'cock-sherry-001',
                 name: 'Cock Sherry Liqueur',
                 category: 'Specialty',
                 description: 'A premium Ugandan liqueur with a rich, velvety texture and deep aromatic notes. Perfectly balanced for sipping or cocktails.',
-                price: 25000,
-                image: 'https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?auto=format&fit=crop&q=80&w=800',
+                retailPrice: 25000,
+                trayPrice: 18000,
+                image: 'cock sherry.png',
                 abv: '22%',
                 availability: true,
+                bottlesPerTray: 12
             },
             {
                 id: 'cock-uganda-gin-002',
                 name: 'Cock Uganda Flavoured Gin',
                 category: 'Gin',
                 description: 'Triple distilled finest quality gin with a unique Ugandan twist. Smooth, crisp, and refreshing.',
-                price: 18000,
-                image: 'https://images.unsplash.com/photo-1514218055094-a20129048f10?auto=format&fit=crop&q=80&w=800',
+                retailPrice: 18000,
+                trayPrice: 12000,
+                image: 'cock ug gin.png',
                 abv: '40%',
                 availability: true,
+                bottlesPerTray: 12
             },
             {
                 id: 'jogoo-pineapple-003',
                 name: 'Jogoo Pineapple Vodka',
                 category: 'Vodka',
                 description: 'Infused with the sweetness of tropical Ugandan pineapples. A vibrant and bold spirit for any celebration.',
-                price: 22000,
-                image: 'https://images.unsplash.com/photo-1458644267420-66bc8a5f21e4?auto=format&fit=crop&q=80&w=800',
+                retailPrice: 22000,
+                trayPrice: 15000,
+                image: 'jogoo vodka 750 ml.png',
                 abv: '40%',
                 availability: true,
+                bottlesPerTray: 12
             },
             {
                 id: 'cock-gin-classic-004',
                 name: 'Cock Gin Classic',
                 category: 'Gin',
                 description: 'The standard of Ugandan gin excellence. Distilled to perfection for a clean, botanical-forward profile.',
-                price: 15000,
-                image: 'https://images.unsplash.com/photo-1614313511387-1436a4480ebb?auto=format&fit=crop&q=80&w=800',
+                retailPrice: 15000,
+                trayPrice: 10000,
+                image: 'cock gin.png',
                 abv: '40%',
                 availability: true,
+                bottlesPerTray: 12
             },
             {
-                id: 'cock-whiskey-005',
-                name: 'Cock Premium Whiskey',
-                category: 'Whiskey',
-                description: 'Aged and blended for a smooth finish with hints of toasted oak and native spices.',
-                price: 45000,
-                image: 'https://images.unsplash.com/photo-1527281473222-793722f67200?auto=format&fit=crop&q=80&w=800',
-                abv: '43%',
+                id: 'cock-sherry-750-005',
+                name: 'Cock Sherry 750ml',
+                category: 'Specialty',
+                description: 'A premium 750ml bottle of our signature sherry liqueur. Perfect for celebrations and gifting.',
+                retailPrice: 28000,
+                trayPrice: 20000,
+                image: 'Cock sherry 750 ml.png',
+                abv: '22%',
                 availability: true,
+                bottlesPerTray: 12
+            },
+            {
+                id: 'cock-gin-250-006',
+                name: 'Cock Gin 250ml',
+                category: 'Gin',
+                description: 'The perfect size for personal enjoyment. Triple distilled gin with the signature Cock botanical blend.',
+                retailPrice: 12000,
+                trayPrice: 8000,
+                image: 'cock gin 250 ml.png',
+                abv: '40%',
+                availability: true,
+                bottlesPerTray: 12
+            },
+            {
+                id: 'cock-sherry-small-007',
+                name: 'Cock Sherry Small',
+                category: 'Specialty',
+                description: 'A smaller bottle of our premium sherry liqueur. Perfect for gifts or personal indulgence.',
+                retailPrice: 15000,
+                trayPrice: 10000,
+                image: 'cock sherry small.png',
+                abv: '22%',
+                availability: true,
+                bottlesPerTray: 12
+            },
+            {
+                id: 'yellow-cock-gin-008',
+                name: 'Yellow Cock Gin',
+                category: 'Gin',
+                description: 'A unique yellow variant of our signature gin with exotic botanical notes. Smooth and distinctive.',
+                retailPrice: 20000,
+                trayPrice: 14000,
+                image: 'yellow cock gin.png',
+                abv: '40%',
+                availability: true,
+                bottlesPerTray: 12
+            },
+            {
+                id: 'cock-small-009',
+                name: 'Cock Small',
+                category: 'Gin',
+                description: 'Our compact size gin for convenient enjoyment. Same great taste in a smaller bottle.',
+                retailPrice: 10000,
+                trayPrice: 7000,
+                image: 'cock small.png',
+                abv: '40%',
+                availability: true,
+                bottlesPerTray: 12
             }
         ];
 
@@ -576,15 +1219,43 @@
         let currentFilter = 'All';
         let searchQuery = '';
         let cartStep = 'cart';
+        let customerType = 'retail'; // 'retail' or 'b2b'
         let orderForm = {
             customerName: '',
+            deliveryGate: '',
             deliveryAddress: '',
             phoneNumber: '',
             notes: ''
         };
 
+        // Initialize Marquee Slideshow
+        function initSlideshow() {
+            const slideshow = document.getElementById('heroSlideshow');
+            
+            const images = [
+                'cock gin.png',
+                'cock sherry.png',
+                'cock gin 250 ml.png',
+                'cock sherry 750 ml.png',
+                'cock sherry small.png',
+                'cock ug gin.png',
+                'yellow cock gin.png',
+                'jogoo vodka 750 ml.png',
+                'cock small.png'
+            ];
+            
+            // Duplicate images for seamless marquee loop
+            const allImages = [...images, ...images];
+            
+            slideshow.innerHTML = allImages.map(img => 
+                `<img src="${img}" alt="${img.replace('.png', '')}" class="marquee-item" loading="lazy">`
+            ).join('');
+        }
+        
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            initSlideshow();
+            
             const verified = localStorage.getItem('age-verified');
             if (verified === 'true') {
                 showMainApp();
@@ -597,24 +1268,54 @@
                 cart = JSON.parse(savedCart);
             }
 
+            // Check for saved customer type
+            const savedCustomerType = localStorage.getItem('customerType');
+            if (savedCustomerType) {
+                customerType = savedCustomerType;
+            }
+
             renderCategoryFilters();
             renderProducts();
             updateCartCount();
         });
 
-        // Age Gate
-        function verifyAge(isOldEnough) {
-            if (isOldEnough) {
-                localStorage.setItem('age-verified', 'true');
-                showMainApp();
-            } else {
-                document.getElementById('ageError').classList.remove('hidden');
-            }
+        // Age Gate Functions
+        function verifyAge() {
+            localStorage.setItem('age-verified', 'true');
+            document.getElementById('ageVerificationStep').classList.add('hidden');
+            document.getElementById('customerTypeStep').classList.remove('hidden');
+        }
+
+        function rejectAge() {
+            document.getElementById('ageError').classList.remove('hidden');
+        }
+
+        function selectCustomerType(type) {
+            customerType = type;
+            localStorage.setItem('customerType', type);
+            
+            // Show notification
+            const message = type === 'b2b' 
+                ? 'B2B Mode activated! Tray pricing applied.'
+                : 'Retail Mode activated!';
+            showToast(message, 'success');
+            
+            showMainApp();
+            renderProducts(); // Re-render with updated pricing
         }
 
         function showMainApp() {
             document.getElementById('ageGate').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
+        }
+
+        // Get current price based on customer type
+        function getPrice(product) {
+            return customerType === 'b2b' ? product.trayPrice : product.retailPrice;
+        }
+
+        function getPriceLabel() {
+            return customerType === 'b2b' ? 'Per Tray (12 bottles)' : 'Per Bottle';
         }
 
         // Category Filters
@@ -638,16 +1339,93 @@
             renderProducts();
         }
 
-        // Search
+        // Search with Live Results
         function handleSearch(value) {
-            searchQuery = value;
+            const resultsContainer = document.getElementById('searchResults');
+            searchQuery = value.trim();
+            
+            if (searchQuery === '') {
+                resultsContainer.classList.add('hidden');
+                renderProducts();
+                return;
+            }
+            
+            const results = products.filter(p => 
+                p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                p.category.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="p-4 text-center">
+                        <p class="text-stone-500">No products found for "${searchQuery}"</p>
+                        <button onclick="clearSearch()" class="mt-2 text-[#b91c1c] text-sm font-bold">Clear search</button>
+                    </div>
+                `;
+            } else {
+                resultsContainer.innerHTML = `
+                    <div class="p-2 bg-stone-50 border-b border-stone-100">
+                        <p class="text-xs text-stone-500 font-bold">${results.length} product(s) found</p>
+                    </div>
+                    ${results.map(p => {
+                        const price = getPrice(p);
+                        return `
+                        <div onclick="selectProduct('${p.id}')" class="flex items-center gap-3 p-3 hover:bg-stone-50 cursor-pointer border-b border-stone-100 last:border-0 transition-colors">
+                            <img src="${p.image}" alt="${p.name}" class="w-12 h-12 object-contain">
+                            <div class="flex-grow">
+                                <p class="font-bold text-stone-900 text-sm">${p.name}</p>
+                                <p class="text-xs text-[#b91c1c] font-bold">UGX ${price.toLocaleString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] bg-stone-100 text-stone-600 px-2 py-1 rounded-full">${p.category}</span>
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
+                    <div class="p-2 bg-stone-50 border-t border-stone-100 text-center">
+                        <button onclick="viewAllResults()" class="text-xs text-[#b91c1c] font-bold hover:underline">View all results in catalog</button>
+                    </div>
+                `;
+            }
+            
+            resultsContainer.classList.remove('hidden');
             renderProducts();
         }
+        
+        function selectProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                document.getElementById('searchInput').value = product.name;
+                document.getElementById('searchResults').classList.add('hidden');
+                scrollToCatalog();
+                setTimeout(() => {
+                    const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+                    if (productCard) {
+                        productCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        productCard.classList.add('ring-2', 'ring-[#b91c1c]');
+                        setTimeout(() => productCard.classList.remove('ring-2', 'ring-[#b91c1c]'), 2000);
+                    }
+                }, 500);
+            }
+        }
+        
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').classList.add('hidden');
+            searchQuery = '';
+            renderProducts();
+        }
+        
+        function viewAllResults() {
+            document.getElementById('searchResults').classList.add('hidden');
+            scrollToCatalog();
+        }
 
-        // Products
+        // Products with B2B Tray Support
         function renderProducts() {
             const container = document.getElementById('productGrid');
             const noResults = document.getElementById('noResults');
+            const searchInfo = document.getElementById('searchInfo');
 
             const filteredProducts = products.filter(p => {
                 const matchesCategory = currentFilter === 'All' || p.category === currentFilter;
@@ -657,6 +1435,14 @@
                 return matchesCategory && matchesSearch;
             });
 
+            // Update search info
+            if (searchQuery !== '') {
+                searchInfo.classList.remove('hidden');
+                searchInfo.innerHTML = `<span class="text-[#b91c1c] font-bold">Searching for "${searchQuery}"</span> — <span class="font-semibold">${filteredProducts.length} product(s) found</span>`;
+            } else {
+                searchInfo.classList.add('hidden');
+            }
+
             if (filteredProducts.length === 0) {
                 container.innerHTML = '';
                 noResults.classList.remove('hidden');
@@ -664,46 +1450,124 @@
             }
 
             noResults.classList.add('hidden');
-            container.innerHTML = filteredProducts.map((product, index) => `
-                <div class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-stone-100 flex flex-col relative product-card hover-lift" style="animation-delay: ${index * 0.1}s">
-                    <div class="relative aspect-[3/4] overflow-hidden bg-stone-50">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover product-image">
-                        <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg text-[10px] font-black text-[#b91c1c] shadow-sm border border-stone-100 uppercase tracking-widest z-10">
-                            ${product.abv} ABV
+            
+            // Customer type badge
+            const typeBadge = customerType === 'b2b' 
+                ? `<div class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    B2B Wholesale
+                   </div>`
+                : `<div class="bg-[#b91c1c] text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    Retail
+                   </div>`;
+
+            container.innerHTML = filteredProducts.map((product, index) => {
+                const price = getPrice(product);
+                const isB2B = customerType === 'b2b';
+                const inWishlist = isInWishlist(product.id);
+                
+                return `
+                <div class="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-stone-100 flex flex-col relative product-card">
+                    <div class="relative aspect-square overflow-hidden bg-stone-50 cursor-pointer" onclick="openZoom('${product.image}', '${product.name}')">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain p-4 product-image">
+                        <!-- Zoom hint -->
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-stone-600">
+                                Tap to zoom
+                            </div>
+                        </div>
+                        <div class="absolute top-3 left-3 z-10">
+                            ${typeBadge}
+                        </div>
+                        
+                        <!-- Wishlist Button -->
+                        <button onclick="event.stopPropagation(); toggleWishlist('${product.id}')" class="absolute top-3 right-14 z-10 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center transition-all ${inWishlist ? 'text-[#b91c1c]' : 'text-stone-400 hover:text-[#b91c1c]'}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ${inWishlist ? 'fill-current' : 'fill-none'}" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </button>
+                        
+                        <div class="absolute top-3 right-3 z-10 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-lg text-[10px] font-black text-[#b91c1c] shadow-sm uppercase tracking-wider">
+                            ${product.abv}
                         </div>
                         ${!product.availability ? `
                             <div class="absolute inset-0 bg-stone-900/70 backdrop-blur-[2px] flex items-center justify-center">
-                                <span class="text-white font-black tracking-[0.3em] uppercase border-2 border-white px-6 py-2 text-sm">Sold Out</span>
-                            </div>
-                        ` : ''}
-                        ${product.availability ? `
-                            <div class="absolute inset-0 bg-[#b91c1c]/0 group-hover:bg-[#b91c1c]/10 transition-colors duration-300 flex items-end justify-end p-4 opacity-0 group-hover:opacity-100">
-                                <button onclick="addToCart('${product.id}')" class="bg-[#b91c1c] text-white px-6 py-3 rounded-full font-black text-xs uppercase tracking-widest shadow-lg hover:bg-[#991b1b] hover:scale-105 transition-all btn-primary">
-                                    Add to Cart
-                                </button>
+                                <span class="text-white font-black tracking-[0.3em] uppercase border-2 border-white px-4 py-1 text-xs">Sold Out</span>
                             </div>
                         ` : ''}
                     </div>
-                    <div class="p-6 flex flex-col flex-grow">
-                        <div class="mb-3">
-                            <span class="text-[10px] uppercase font-black tracking-[0.2em] text-[#b91c1c] mb-1 block">${product.category}</span>
-                            <h3 class="text-xl font-black text-stone-900 tracking-tight leading-tight uppercase group-hover:text-[#b91c1c] transition-colors">${product.name}</h3>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <div class="mb-2">
+                            <span class="text-[10px] uppercase font-bold tracking-[0.2em] text-[#b91c1c] block">${product.category}</span>
+                            <h3 class="text-base font-bold text-stone-900 tracking-tight uppercase group-hover:text-[#b91c1c] transition-colors">${product.name}</h3>
                         </div>
-                        <p class="text-stone-500 text-sm font-medium line-clamp-2 mb-6 flex-grow leading-relaxed">${product.description}</p>
-                        <div class="flex items-center justify-between mt-auto pt-6 border-t border-stone-50">
-                            <div class="flex flex-col">
-                                <span class="text-[10px] uppercase font-bold text-stone-400 tracking-widest mb-0.5">Price</span>
-                                <span class="text-xl font-black text-stone-900 tracking-tighter">UGX ${product.price.toLocaleString()}</span>
+                        
+                        <!-- Pricing Display -->
+                        <div class="mb-3 p-2 rounded-lg ${isB2B ? 'bg-amber-50 border border-amber-200' : 'bg-stone-50'}">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] uppercase font-bold ${isB2B ? 'text-amber-600' : 'text-stone-400'} tracking-wider">
+                                    ${getPriceLabel()}
+                                </span>
+                                <span class="text-lg font-black ${isB2B ? 'text-amber-700' : 'text-stone-900'}">UGX ${price.toLocaleString()}</span>
                             </div>
-                            <button onclick="addToCart('${product.id}')" ${!product.availability ? 'disabled' : ''} class="w-14 h-14 flex items-center justify-center rounded-xl transition-all shadow-md hover:shadow-lg ${product.availability ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b] hover:scale-110' : 'bg-stone-100 text-stone-300 cursor-not-allowed'}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
-                                </svg>
-                            </button>
+                            ${isB2B ? `<div class="text-[10px] text-amber-500 mt-1">Save ${(product.retailPrice * product.bottlesPerTray - price).toLocaleString()} per tray</div>` : ''}
                         </div>
+                        
+                        <!-- B2B Quantity Selector -->
+                        ${isB2B ? `
+                        <div class="mb-3">
+                            <div class="flex items-center gap-2">
+                                <button onclick="updateQuantity('${product.id}', -1)" class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 font-bold flex items-center justify-center hover:bg-amber-200">-</button>
+                                <input type="number" id="qty-${product.id}" value="1" min="1" 
+                                    onchange="validateQuantity('${product.id}')"
+                                    class="w-14 h-8 text-center border border-amber-200 rounded-lg font-bold text-sm">
+                                <button onclick="updateQuantity('${product.id}', 1)" class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 font-bold flex items-center justify-center hover:bg-amber-200">+</button>
+                                <span class="text-xs text-amber-600 flex-grow text-right">= <span id="total-${product.id}">${price.toLocaleString()}</span></span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        <button onclick="addToCart('${product.id}')" ${!product.availability ? 'disabled' : ''} class="w-full ${product.availability ? 'bg-[#b91c1c] hover:bg-[#991b1b]' : 'bg-stone-200 text-stone-400 cursor-not-allowed'} text-white py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-colors shadow-sm">
+                            ${product.availability ? (isB2B ? 'Add Tray(s)' : 'Add to Cart') : 'Sold Out'}
+                        </button>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
+        }
+
+        // Update quantity and total for B2B
+        function updateQuantity(productId, change) {
+            const input = document.getElementById(`qty-${productId}`);
+            const totalEl = document.getElementById(`total-${productId}`);
+            const product = products.find(p => p.id === productId);
+            if (!product || !input) return;
+            
+            let currentValue = parseInt(input.value) || 1;
+            currentValue = Math.max(1, currentValue + change);
+            input.value = currentValue;
+            
+            const price = getPrice(product);
+            totalEl.textContent = (price * currentValue).toLocaleString();
+        }
+
+        function validateQuantity(productId, bottlesPerTray) {
+            const input = document.getElementById(`qty-${productId}`);
+            const totalEl = document.getElementById(`total-${productId}`);
+            const product = products.find(p => p.id === productId);
+            if (!product || !input) return;
+            
+            let value = parseInt(input.value) || 1;
+            value = Math.max(1, value);
+            input.value = value;
+            
+            const price = getPrice(product);
+            totalEl.textContent = (price * value).toLocaleString();
         }
 
         function resetFilters() {
@@ -733,21 +1597,41 @@
             }
         });
 
-        // Cart Functions
+        // Cart Functions with B2B Tray Support
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) return;
 
+            let quantity = 1;
+            
+            // In B2B mode, get quantity from input field
+            if (customerType === 'b2b') {
+                const qtyInput = document.getElementById(`qty-${productId}`);
+                if (qtyInput) {
+                    quantity = parseInt(qtyInput.value) || 1;
+                }
+            }
+
             const existing = cart.find(item => item.id === productId);
             if (existing) {
-                cart = cart.map(item => item.id === productId ? { ...item, quantity: item.quantity + 1 } : item);
+                cart = cart.map(item => item.id === productId 
+                    ? { ...item, quantity: item.quantity + quantity } 
+                    : item);
             } else {
-                cart.push({ ...product, quantity: 1 });
+                cart.push({ ...product, quantity: quantity });
             }
 
             saveCart();
             updateCartCount();
-            openCart();
+            
+            const message = customerType === 'b2b' 
+                ? `Added ${quantity} tray(s) to cart`
+                : 'Added to cart';
+            showToast(message, 'success');
+            
+            if (customerType === 'retail') {
+                openCart();
+            }
         }
 
         function updateQuantity(productId, delta) {
@@ -774,6 +1658,188 @@
             localStorage.setItem('cart', JSON.stringify(cart));
         }
 
+        // Wishlist State
+        let wishlist = [];
+        
+        // Initialize wishlist
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedWishlist = localStorage.getItem('wishlist');
+            if (savedWishlist) {
+                wishlist = JSON.parse(savedWishlist);
+            }
+            updateWishlistCount();
+        });
+
+        function updateWishlistCount() {
+            const count = document.getElementById('wishlistCount');
+            if (count) {
+                count.textContent = wishlist.length;
+            }
+        }
+
+        function openWishlist() {
+            document.getElementById('wishlistModal').classList.remove('hidden');
+            renderWishlist();
+        }
+
+        function closeWishlist() {
+            document.getElementById('wishlistModal').classList.add('hidden');
+        }
+
+        function toggleWishlist(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const index = wishlist.findIndex(item => item.id === productId);
+            if (index > -1) {
+                wishlist.splice(index, 1);
+                showToast('Removed from wishlist', 'success');
+            } else {
+                wishlist.push(product);
+                showToast('Added to wishlist', 'success');
+            }
+            
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            updateWishlistCount();
+            renderWishlist();
+            renderProducts(); // Update wishlist buttons
+        }
+
+        function isInWishlist(productId) {
+            return wishlist.some(item => item.id === productId);
+        }
+
+        // Zoom Functions
+        function openZoom(imageSrc, productName) {
+            const modal = document.getElementById('zoomModal');
+            const img = document.getElementById('zoomImage');
+            const nameEl = document.getElementById('zoomProductName');
+            
+            img.src = imageSrc;
+            nameEl.textContent = productName;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeZoom() {
+            const modal = document.getElementById('zoomModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Close zoom on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeZoom();
+            }
+        });
+
+        function renderWishlist() {
+            const emptyState = document.getElementById('wishlistEmpty');
+            const itemsContainer = document.getElementById('wishlistItems');
+            const footer = document.getElementById('wishlistFooter');
+            
+            if (wishlist.length === 0) {
+                emptyState.classList.remove('hidden');
+                itemsContainer.classList.add('hidden');
+                footer.classList.add('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            itemsContainer.classList.remove('hidden');
+            footer.classList.remove('hidden');
+            
+            const isB2B = customerType === 'b2b';
+            itemsContainer.innerHTML = wishlist.map(item => {
+                const price = isB2B ? item.trayPrice : item.retailPrice;
+                return `
+                <div class="flex gap-4 p-4 bg-white rounded-xl shadow-sm border border-stone-100">
+                    <div class="w-20 h-20 bg-stone-50 rounded-xl overflow-hidden flex-shrink-0">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-grow">
+                        <h4 class="font-black text-stone-900 leading-tight uppercase text-sm">${item.name}</h4>
+                        <p class="text-xs text-[#b91c1c] font-bold mt-1">UGX ${price.toLocaleString()} ${isB2B ? '/tray' : ''}</p>
+                        <div class="flex items-center gap-2 mt-3">
+                            <button onclick="addToCart('${item.id}')" class="flex-1 bg-[#b91c1c] text-white py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#991b1b] transition-colors">
+                                Add to Cart
+                            </button>
+                            <button onclick="toggleWishlist('${item.id}')" class="p-2 text-stone-400 hover:text-red-500 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function clearWishlist() {
+            if (confirm('Are you sure you want to clear your wishlist?')) {
+                wishlist = [];
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                updateWishlistCount();
+                renderWishlist();
+                renderProducts();
+                showToast('Wishlist cleared', 'success');
+            }
+        }
+
+        function addAllToCartFromWishlist() {
+            if (wishlist.length === 0) return;
+            
+            wishlist.forEach(product => {
+                const existing = cart.find(item => item.id === product.id);
+                if (existing) {
+                    cart = cart.map(item => item.id === product.id 
+                        ? { ...item, quantity: item.quantity + 1 } 
+                        : item);
+                } else {
+                    cart.push({ ...product, quantity: 1 });
+                }
+            });
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            closeWishlist();
+            showToast(`${wishlist.length} items added to cart`, 'success');
+            openCart();
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const bgColors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-[#b91c1c]',
+                warning: 'bg-amber-500'
+            };
+            
+            toast.className = `px-6 py-4 ${bgColors[type] || bgColors.info} text-white rounded-xl shadow-xl font-bold text-sm flex items-center gap-3 animate-slide-in max-w-sm`;
+            
+            const icons = {
+                success: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>',
+                error: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>',
+                info: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+                warning: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>'
+            };
+            
+            toast.innerHTML = `${icons[type] || icons.info} <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         function updateCartCount() {
             const count = cart.reduce((acc, item) => acc + item.quantity, 0);
             const badge = document.getElementById('cartCount');
@@ -793,100 +1859,322 @@
         function closeCart() {
             document.getElementById('cartSidebar').classList.add('hidden');
         }
+        
+        function previewProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const isB2B = customerType === 'b2b';
+            const price = isB2B ? product.trayPrice : product.retailPrice;
+            
+            document.getElementById('previewImage').src = product.image;
+            document.getElementById('previewName').textContent = product.name;
+            document.getElementById('previewCategory').textContent = product.category;
+            document.getElementById('previewPrice').textContent = `UGX ${price.toLocaleString()} ${isB2B ? '/tray' : '/bottle'}`;
+            document.getElementById('previewDescription').textContent = product.description || 'Premium quality spirit from Gama Distillers Uganda.';
+            document.getElementById('previewAbv').textContent = product.abv || 'N/A';
+            document.getElementById('previewModal').classList.remove('hidden');
+        }
+        
+        function closePreview() {
+            document.getElementById('previewModal').classList.add('hidden');
+        }
+
+        // Dashboard Functions
+        let isDashboardLoggedIn = false;
+        
+        function openDashboard() {
+            document.getElementById('dashboardModal').classList.remove('hidden');
+            renderDashboard();
+        }
+
+        function closeDashboard() {
+            document.getElementById('dashboardModal').classList.add('hidden');
+        }
+
+        function renderDashboard() {
+            const loginSection = document.getElementById('dashboardLogin');
+            const loggedInSection = document.getElementById('dashboardLoggedIn');
+            
+            if (isDashboardLoggedIn) {
+                loginSection.classList.add('hidden');
+                loggedInSection.classList.remove('hidden');
+            } else {
+                loginSection.classList.remove('hidden');
+                loggedInSection.classList.add('hidden');
+            }
+        }
+
+        function loginToDashboard() {
+            const email = document.getElementById('dashboardEmail').value;
+            const password = document.getElementById('dashboardPassword').value;
+            
+            if (!email || !password) {
+                showToast('Please enter email and password', 'error');
+                return;
+            }
+            
+            // Simulate login (in production, this would call an API)
+            isDashboardLoggedIn = true;
+            renderDashboard();
+            showToast('Welcome back!', 'success');
+        }
+
+        function logoutDashboard() {
+            isDashboardLoggedIn = false;
+            renderDashboard();
+            showToast('Logged out successfully', 'success');
+        }
+
+        function socialLogin(provider) {
+            showToast(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login coming soon!`, 'info');
+        }
+
+        function showB2BRegistration() {
+            showToast('B2B registration form will open. Contact us at +256 758 238 514 for wholesale account.', 'info');
+        }
+        
+        function scrollToAbout() {
+            document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showOrderTracking() {
+            showToast('Enter your order number to track. This feature is coming soon!', 'info');
+        }
+
+        function showContactSupport() {
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank');
+        }
+
+        function viewAllOrders() {
+            showToast('Order history will be displayed here', 'info');
+        }
+
+        function quickOrder() {
+            closeDashboard();
+            scrollToCatalog();
+        }
 
         function renderCartItems() {
-            const container = document.getElementById('cartItems');
+            const container = document.getElementById('cartContent');
             const footer = document.getElementById('cartFooter');
-            const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-
+            const isB2B = customerType === 'b2b';
+            
+            const total = cart.reduce((acc, item) => {
+                const price = isB2B ? item.trayPrice : item.retailPrice;
+                return acc + (price * item.quantity);
+            }, 0);
+            
+            // Update item count
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            document.getElementById('cartItemCount').textContent = `${totalItems} ${isB2B ? 'trays' : 'items'}`;
+            
             if (cart.length === 0) {
                 container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full text-stone-300 space-y-6">
-                        <div class="p-8 bg-stone-50 rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="flex flex-col items-center justify-center h-full min-h-[60vh] text-stone-300 space-y-8 px-6">
+                        <div class="p-12 bg-stone-100 rounded-full relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-6xl">🛒</span>
+                            </div>
                         </div>
-                        <div class="text-center">
-                            <p class="text-xl font-black text-stone-900 uppercase tracking-tight">Cart Empty</p>
-                            <p class="text-sm font-medium text-stone-400 mt-2">Discover our premium spirits.</p>
+                        <div class="text-center max-w-md">
+                            <p class="text-3xl font-black text-stone-500 uppercase tracking-tight">${isB2B ? 'No trays selected' : 'Your cart is empty'}</p>
+                            <p class="text-lg text-stone-400 mt-4">${isB2B ? 'Add trays to start your wholesale order' : 'Discover our premium spirits from Gama Distillers.'}</p>
                         </div>
-                        <button onclick="closeCart()" class="bg-[#b91c1c] text-white px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest shadow-lg hover:bg-[#991b1b] transition-all">Browse Spirits</button>
+                        <button onclick="scrollToCatalog(); closeCart();" class="bg-[#b91c1c] text-white px-12 py-4 rounded-full font-black text-sm uppercase tracking-widest shadow-xl hover:bg-[#991b1b] transition-all hover:scale-105 active:scale-95">
+                            Browse Spirits
+                        </button>
                     </div>
                 `;
-                footer.classList.add('hidden');
+                document.getElementById('cartFooter').classList.add('hidden');
                 return;
             }
 
             footer.classList.remove('hidden');
             document.getElementById('cartTotal').textContent = `UGX ${total.toLocaleString()}`;
+            document.getElementById('cartSubtotal').textContent = `UGX ${total.toLocaleString()}`;
 
             if (cartStep === 'cart') {
+                // Checkout button
+                const checkoutText = isB2B 
+                    ? `Request Quote • ${cart.reduce((a, b) => a + b.quantity, 0)} trays`
+                    : 'Proceed to Checkout';
+                    
                 document.getElementById('cartActions').innerHTML = `
-                    <button onclick="goToCheckout()" class="w-full bg-[#b91c1c] text-white font-black py-5 rounded-2xl hover:bg-[#991b1b] transition-all flex items-center justify-center gap-3 uppercase tracking-widest shadow-xl active:scale-95">
-                        Delivery Details
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <button onclick="clearCart()" class="bg-stone-100 text-stone-600 py-3 rounded-xl font-bold uppercase tracking-widest hover:bg-stone-200 transition-colors">
+                            Clear Cart
+                        </button>
+                        <button onclick="goToCheckout()" class="bg-[#b91c1c] text-white py-3 rounded-xl font-bold uppercase tracking-widest hover:bg-[#991b1b] transition-colors">
+                            ${checkoutText}
+                        </button>
+                    </div>
+                    <button onclick="submitOrder()" class="w-full bg-green-500 hover:bg-green-600 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-3 uppercase tracking-widest shadow-lg active:scale-[0.98]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
                         </svg>
+                        Order via WhatsApp
                     </button>
                 `;
 
-                container.innerHTML = cart.map(item => `
-                    <div class="flex gap-5 p-4 border border-stone-100 rounded-2xl group hover:border-[#b91c1c]/30 transition-all">
-                        <div class="w-24 h-24 bg-stone-50 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
-                            <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">
+                container.innerHTML = `
+                    <div class="max-w-2xl mx-auto px-8 py-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-black text-stone-900 uppercase tracking-wider text-lg">Cart Items (${cart.length})</h3>
+                            <span class="text-sm text-stone-500">Click items to preview</span>
                         </div>
-                        <div class="flex-grow flex flex-col">
-                            <div class="flex justify-between items-start">
-                                <h4 class="font-black text-stone-900 leading-tight uppercase text-sm">${item.name}</h4>
-                                <button onclick="removeFromCart('${item.id}')" class="text-stone-300 hover:text-red-600 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <p class="text-xs font-black text-[#b91c1c] mt-1">UGX ${item.price.toLocaleString()}</p>
-                            <div class="flex items-center justify-between mt-auto">
-                                <div class="flex items-center bg-stone-100 rounded-lg p-1">
-                                    <button onclick="updateQuantity('${item.id}', -1)" class="w-8 h-8 flex items-center justify-center font-black hover:text-[#b91c1c] transition-colors">-</button>
-                                    <span class="mx-3 font-black text-xs w-6 text-center text-stone-900">${item.quantity}</span>
-                                    <button onclick="updateQuantity('${item.id}', 1)" class="w-8 h-8 flex items-center justify-center font-black hover:text-[#b91c1c] transition-colors">+</button>
+                    </div>
+                ` + cart.map(item => {
+                    const price = isB2B ? item.trayPrice : item.retailPrice;
+                    const itemTotal = price * item.quantity;
+                    const bottles = isB2B ? item.quantity * item.bottlesPerTray : item.quantity;
+                    
+                    return `
+                    <div class="max-w-2xl mx-auto px-8 pb-4">
+                        <div class="group bg-white rounded-2xl border border-stone-200 hover:border-[#b91c1c]/30 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer" onclick="previewProduct('${item.id}')">
+                            <div class="flex gap-6 p-6">
+                                <div class="w-28 h-28 bg-stone-50 rounded-2xl overflow-hidden flex-shrink-0 relative shadow-inner">
+                                    <img src="${item.image}" alt="${item.name}" class="w-full h-full object-contain p-2">
+                                    ${isB2B ? `
+                                    <div class="absolute top-2 right-2 bg-amber-500 text-white text-xs font-black px-2 py-1 rounded-lg">
+                                        12/case
+                                    </div>
+                                    ` : ''}
                                 </div>
-                                <span class="font-black text-stone-900 text-xs">UGX ${(item.price * item.quantity).toLocaleString()}</span>
+                                <div class="flex-grow">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <p class="text-xs font-bold text-[#b91c1c] uppercase tracking-widest mb-1">${item.category}</p>
+                                            <h4 class="font-black text-stone-900 leading-tight uppercase text-xl">${item.name}</h4>
+                                        </div>
+                                        <button onclick="event.stopPropagation(); removeFromCart('${item.id}')" class="w-10 h-10 flex items-center justify-center text-stone-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-end justify-between mt-4">
+                                        <div class="flex items-center bg-stone-100 rounded-xl p-1">
+                                            <button onclick="event.stopPropagation(); updateQuantity('${item.id}', -1)" class="w-10 h-10 flex items-center justify-center text-stone-600 hover:text-[#b91c1c] hover:bg-white rounded-lg transition-all font-bold text-lg">
+                                                −
+                                            </button>
+                                            <span class="font-black text-stone-900 text-lg w-14 text-center">${item.quantity}</span>
+                                            <button onclick="event.stopPropagation(); updateQuantity('${item.id}', 1)" class="w-10 h-10 flex items-center justify-center text-stone-600 hover:text-[#b91c1c] hover:bg-white rounded-lg transition-all font-bold text-lg">
+                                                +
+                                            </button>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-2xl font-black text-stone-900">UGX ${itemTotal.toLocaleString()}</p>
+                                            <p class="text-xs text-stone-400 mt-1">${bottles} ${isB2B ? 'bottles' : 'bottles'} • UGX ${price.toLocaleString()} ${isB2B ? '/tray' : '/btl'}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
             } else {
                 document.getElementById('cartActions').innerHTML = `
-                    <button onclick="goBackToCart()" class="text-[#b91c1c] text-xs font-black uppercase tracking-widest flex items-center gap-2 hover:translate-x-[-4px] transition-transform mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" /></svg>
-                        Order Items
-                    </button>
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-[10px] font-black text-[#b91c1c] uppercase tracking-widest mb-2">Recipient Name</label>
-                            <input type="text" id="customerName" value="${orderForm.customerName}" onchange="updateOrderForm('customerName', this.value)" class="w-full border-stone-200 border-2 rounded-xl p-4 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-bold text-stone-900" placeholder="E.G. JOHN DOE">
+                    <div class="flex items-center gap-3 mb-6">
+                        <button onclick="goBackToCart()" class="w-10 h-10 flex items-center justify-center text-[#b91c1c] hover:bg-red-50 rounded-xl transition-colors flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                        </button>
+                        <h3 class="font-black text-stone-900 uppercase tracking-wider text-lg">Checkout</h3>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-stone-900 uppercase tracking-wider text-sm mb-4">Your Details</h4>
+                            <div>
+                                <label class="block text-xs font-bold text-[#b91c1c] uppercase tracking-wider mb-2">Full Name</label>
+                                <input type="text" id="customerName" value="${orderForm.customerName}" onchange="updateOrderForm('customerName', this.value)" class="w-full border border-stone-200 rounded-xl px-4 py-3 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-medium text-stone-900" placeholder="Enter your full name">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-[#b91c1c] uppercase tracking-wider mb-2">Phone Number</label>
+                                <input type="tel" id="phoneNumber" value="${orderForm.phoneNumber}" onchange="updateOrderForm('phoneNumber', this.value)" class="w-full border border-stone-200 rounded-xl px-4 py-3 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-medium text-stone-900" placeholder="07XX XXX XXX">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-[#b91c1c] uppercase tracking-wider mb-2">Delivery Area</label>
+                                <select id="deliveryGate" onchange="updateOrderForm('deliveryGate', this.value)" class="w-full border border-stone-200 rounded-xl px-4 py-3 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-medium text-stone-900">
+                                    <option value="">Select delivery area</option>
+                                    <optgroup label="Kampala">
+                                        <option value="Nakawa" ${orderForm.deliveryGate === 'Nakawa' ? 'selected' : ''}>Nakawa</option>
+                                        <option value="Bweyogerere" ${orderForm.deliveryGate === 'Bweyogerere' ? 'selected' : ''}>Bweyogerere</option>
+                                        <option value="Kireka" ${orderForm.deliveryGate === 'Kireka' ? 'selected' : ''}>Kireka</option>
+                                        <option value="Ntinda" ${orderForm.deliveryGate === 'Ntinda' ? 'selected' : ''}>Ntinda</option>
+                                        <option value="Mbuya" ${orderForm.deliveryGate === 'Mbuya' ? 'selected' : ''}>Mbuya</option>
+                                        <option value="Bugolobi" ${orderForm.deliveryGate === 'Bugolobi' ? 'selected' : ''}>Bugolobi</option>
+                                        <option value="City Center" ${orderForm.deliveryGate === 'City Center' ? 'selected' : ''}>City Center</option>
+                                    </optgroup>
+                                    <optgroup label="Other Areas">
+                                        <option value="Entebbe" ${orderForm.deliveryGate === 'Entebbe' ? 'selected' : ''}>Entebbe</option>
+                                        <option value="Mukono" ${orderForm.deliveryGate === 'Mukono' ? 'selected' : ''}>Mukono</option>
+                                        <option value="Jinja" ${orderForm.deliveryGate === 'Jinja' ? 'selected' : ''}>Jinja</option>
+                                        <option value="Masaka" ${orderForm.deliveryGate === 'Masaka' ? 'selected' : ''}>Masaka</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-[#b91c1c] uppercase tracking-wider mb-2">Full Address</label>
+                                <textarea id="deliveryAddress" onchange="updateOrderForm('deliveryAddress', this.value)" rows="2" class="w-full border border-stone-200 rounded-xl px-4 py-3 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-medium text-stone-900" placeholder="Enter your delivery address">${orderForm.deliveryAddress}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-[#b91c1c] uppercase tracking-wider mb-2">Notes (Optional)</label>
+                                <input type="text" id="notes" value="${orderForm.notes}" onchange="updateOrderForm('notes', this.value)" class="w-full border border-stone-200 rounded-xl px-4 py-3 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-medium text-stone-900" placeholder="Any special instructions">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-[#b91c1c] uppercase tracking-widest mb-2">Uganda Delivery Address</label>
-                            <textarea id="deliveryAddress" onchange="updateOrderForm('deliveryAddress', this.value)" rows="3" class="w-full border-stone-200 border-2 rounded-xl p-4 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-bold text-stone-900" placeholder="E.G. KAMPALA, PLOT 23...">${orderForm.deliveryAddress}</textarea>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-[#b91c1c] uppercase tracking-widest mb-2">WhatsApp / Phone</label>
-                            <input type="tel" id="phoneNumber" value="${orderForm.phoneNumber}" onchange="updateOrderForm('phoneNumber', this.value)" class="w-full border-stone-200 border-2 rounded-xl p-4 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-bold text-stone-900" placeholder="E.G. 0758 238514">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-[#b91c1c] uppercase tracking-widest mb-2">Additional Notes</label>
-                            <input type="text" id="notes" value="${orderForm.notes}" onchange="updateOrderForm('notes', this.value)" class="w-full border-stone-200 border-2 rounded-xl p-4 focus:border-[#b91c1c] focus:ring-0 bg-stone-50 font-bold text-stone-900" placeholder="GIFT WRAP? PREFERRED TIME?">
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-stone-900 uppercase tracking-wider text-sm mb-4">Order Summary</h4>
+                            <div class="bg-stone-50 rounded-xl p-4 sm:p-6">
+                                <div class="space-y-3 mb-6 max-h-48 overflow-y-auto scrollbar-thin">
+                                    ${cart.map(item => {
+                                        const price = isB2B ? item.trayPrice : item.retailPrice;
+                                        const itemTotal = price * item.quantity;
+                                        return `
+                                        <div class="flex justify-between items-center py-2 border-b border-stone-200">
+                                            <div class="flex items-center gap-3">
+                                                <img src="${item.image}" alt="${item.name}" class="w-10 h-10 object-contain bg-white rounded-lg p-1">
+                                                <div>
+                                                    <p class="font-bold text-stone-900 text-sm">${item.name}</p>
+                                                    <p class="text-xs text-stone-500">Qty: ${item.quantity}</p>
+                                                </div>
+                                            </div>
+                                            <p class="font-bold text-stone-900">UGX ${itemTotal.toLocaleString()}</p>
+                                        </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                                <div class="border-t border-stone-200 pt-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-stone-500">Subtotal</span>
+                                        <span class="font-bold text-stone-900">UGX ${total.toLocaleString()}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="text-stone-500">Delivery</span>
+                                        <span class="font-bold text-green-600">Free</span>
+                                    </div>
+                                    <div class="flex justify-between items-center pt-4 border-t border-stone-200">
+                                        <span class="font-black text-stone-900 uppercase tracking-wider">Total</span>
+                                        <span class="text-xl font-black text-[#b91c1c]">UGX ${total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <button onclick="submitOrder()" ${!orderForm.customerName || !orderForm.deliveryAddress || !orderForm.phoneNumber ? 'disabled' : ''} class="w-full bg-[#25D366] text-white font-black py-5 rounded-2xl hover:bg-[#128C7E] disabled:bg-stone-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 uppercase tracking-widest shadow-xl active:scale-95 mt-6">
-                        Submit via WhatsApp
-                    </button>
+                    <div class="mt-6">
+                        <button onclick="submitOrder()" ${!orderForm.customerName || !orderForm.deliveryAddress || !orderForm.phoneNumber ? 'disabled' : ''} class="w-full bg-green-500 hover:bg-green-600 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-3 uppercase tracking-widest shadow-lg active:scale-[0.98]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+                            </svg>
+                            Order via WhatsApp
+                        </button>
+                    </div>
                 `;
 
-                container.innerHTML = '<div class="space-y-6"></div>';
+                container.innerHTML = '';
             }
         }
 
@@ -899,28 +2187,42 @@
             cartStep = 'cart';
             renderCartItems();
         }
+        
+        function clearCart() {
+            if (cart.length === 0) return;
+            if (confirm('Are you sure you want to clear all items from your cart?')) {
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                renderCartItems();
+                showToast('Cart cleared', 'success');
+            }
+        }
 
         function updateOrderForm(field, value) {
             orderForm[field] = value;
         }
 
         function submitOrder() {
-            const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            const isB2B = customerType === 'b2b';
+            const subtotal = cart.reduce((acc, item) => {
+                const price = isB2B ? item.trayPrice : item.retailPrice;
+                return acc + (price * item.quantity);
+            }, 0);
             
-            const orderItemsText = cart.map(i => 
-                `• *${i.name}*\n  Qty: ${i.quantity}\n  Price: UGX ${(i.price * i.quantity).toLocaleString()}\n  Ref: ${i.image}`
-            ).join('\n\n');
+            const orderItemsText = cart.map(i => {
+                const price = isB2B ? i.trayPrice : i.retailPrice;
+                const itemTotal = price * i.quantity;
+                const bottles = isB2B ? i.quantity * i.bottlesPerTray : i.quantity;
+                return `━━━━━━━━━━━━━━━━\n📦 *${i.name}*\n🖼️ Ref: ${i.image}\n📊 Qty: ${i.quantity} ${isB2B ? 'tray(s)' : 'bottle(s)'} (${bottles} bottles)\n💵 Price: UGX ${price.toLocaleString()} ${isB2B ? '/tray' : '/bottle'}\n💰 Subtotal: UGX ${itemTotal.toLocaleString()}`;
+            }).join('\n\n');
 
-            const orderText = `*🛒 NEW ORDER - GAMA DISTILLERS UGANDA*\n\n` +
-                `*👤 CUSTOMER DETAILS*\n` +
-                `*Name:* ${orderForm.customerName}\n` +
-                `*Address:* ${orderForm.deliveryAddress}\n` +
-                `*Contact:* ${orderForm.phoneNumber}\n` +
-                (orderForm.notes ? `*Notes:* ${orderForm.notes}\n` : '') +
-                `\n*📦 ORDER ITEMS*\n` +
-                orderItemsText +
-                `\n\n*💰 TOTAL AMOUNT:* UGX ${subtotal.toLocaleString()}\n\n` +
-                `_Please confirm delivery schedule._`;
+            const customerTypeText = isB2B ? '🧾 B2B WHOLESALE ORDER' : '🛒 RETAIL ORDER';
+            
+            const orderText = `*🥃 GAMA DISTILLERS UGANDA*\n${customerTypeText}\n━━━━━━━━━━━━━━━━\n\n*👤 CUSTOMER DETAILS*\n━━━━━━━━━━━━━━━━\n📛 Name: ${orderForm.customerName}\n📞 Phone: ${orderForm.phoneNumber}\n📍 Address: ${orderForm.deliveryAddress}` + 
+                (orderForm.deliveryGate ? `\n🚩 Area: ${orderForm.deliveryGate}` : '') +
+                (orderForm.notes ? `\n📝 Notes: ${orderForm.notes}` : '') +
+                `\n\n*📦 ORDER ITEMS*\n━━━━━━━━━━━━━━━━\n${orderItemsText}\n\n━━━━━━━━━━━━━━━━\n*💰 TOTAL: UGX ${subtotal.toLocaleString()}*\n━━━━━━━━━━━━━━━━\n\n_✅ Order submitted via Rozan The Ledger_\n_Please confirm delivery & send payment details._`;
 
             const encoded = encodeURIComponent(orderText);
             window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, '_blank');
@@ -983,5 +2285,8 @@
             document.getElementById('aiRecommendation').classList.add('hidden');
         }
     </script>
+    
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-[200] space-y-3"></div>
 </body>
 </html>
